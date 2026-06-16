@@ -2,66 +2,94 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>The Rubik's Theory | La Web Definitiva</title>
+    <title>THE RUBIK'S THEORY | La Web Definitiva</title>
     <style>
-        :root { --bg: #050505; --accent: #3e7bff; --text: #ccc; --white: #fff; }
-        body { background-color: var(--bg); color: var(--text); font-family: 'Segoe UI', sans-serif; margin: 0; padding: 20px; line-height: 1.8; }
+        :root { --bg: #050505; --neon: #3e7bff; --text: #ccc; --white: #fff; --glow: 0 0 15px rgba(62, 123, 255, 0.5); }
+        body { background-color: var(--bg); color: var(--text); font-family: 'Segoe UI', sans-serif; margin: 0; padding: 20px; }
 
-        .wrapper { max-width: 900px; margin: auto; padding: 20px; border: 1px solid #222; border-radius: 15px; background: #080808; }
-        h1 { color: var(--white); text-align: center; text-transform: uppercase; letter-spacing: 3px; }
-        
-        .step-container { margin-bottom: 10px; border: 1px solid #333; border-radius: 8px; overflow: hidden; }
-        .step-btn { 
-            width: 100%; background: #111; color: var(--white); border: none; padding: 20px; 
-            text-align: left; cursor: pointer; font-size: 1.2em; font-weight: bold;
-            transition: background 0.3s; display: flex; justify-content: space-between;
+        /* Borde Animado */
+        .wrapper {
+            position: relative; padding: 8px; border-radius: 25px;
+            background: linear-gradient(45deg, #fff, #ff3e3e, #3e7bff, #ff9f3e, #3eff5e, #ffe63e, #fff);
+            background-size: 400% 400%; animation: borderLoop 5s linear infinite;
         }
-        .step-btn:hover { background: #222; }
+        @keyframes borderLoop { 0% { background-position: 0% 50%; } 100% { background-position: 400% 50%; } }
+
+        .container { background: var(--bg); padding: 50px; border-radius: 20px; min-height: 80vh; }
+        h1 { color: var(--white); text-align: center; font-size: 3em; letter-spacing: 10px; margin-bottom: 40px; }
+
+        nav { display: flex; justify-content: center; gap: 30px; margin-bottom: 50px; }
+        .nav-btn { 
+            background: #111; color: var(--white); border: 1px solid #333; padding: 15px 30px; 
+            cursor: pointer; transition: 0.4s; border-radius: 10px; font-weight: bold;
+        }
+        .nav-btn:hover { border-color: var(--neon); box-shadow: var(--glow); transform: translateY(-5px); }
+
+        .page { display: none; max-width: 800px; margin: auto; animation: fadeIn 0.8s; }
+        .active { display: block; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+
+        .step-btn { 
+            width: 100%; background: #111; color: var(--white); border: 1px solid #333; 
+            padding: 20px; text-align: left; cursor: pointer; border-radius: 10px;
+            display: flex; justify-content: space-between; transition: 0.3s; margin-bottom: 10px;
+        }
+        .step-btn:hover { border-color: var(--neon); box-shadow: var(--glow); }
         
         .step-content { 
-            max-height: 0; overflow: hidden; transition: max-height 0.5s ease-out; 
-            background: #0a0a0a; border-top: none;
+            max-height: 0; overflow: hidden; transition: max-height 0.6s cubic-bezier(0,1,0,1);
+            background: #080808; border: 1px solid #222; border-radius: 0 0 10px 10px;
         }
-        .content-inner { padding: 30px; white-space: pre-wrap; }
+        .content-inner { padding: 30px; white-space: pre-wrap; color: #aaa; }
+        .active-content { max-height: 5000px; transition: max-height 1s ease-in; }
         
-        code { background: #222; padding: 2px 8px; border-radius: 4px; color: #ffe63e; font-size: 1.1em; }
-        strong { color: var(--white); }
-        .active-content { max-height: 5000px; } /* Ajuste dinámico para mucho texto */
+        code { color: #ffe63e; font-family: monospace; }
     </style>
 </head>
 <body>
 
 <div class="wrapper">
-    <h1>The Rubik's Theory</h1>
-    <div id="app"></div>
+    <div class="container">
+        <h1>THE RUBIK'S THEORY</h1>
+        <nav>
+            <button class="nav-btn" onclick="showPage('inicio')">INICIO</button>
+            <button class="nav-btn" onclick="showPage('principiante')">PRINCIPIANTE</button>
+        </nav>
+
+        <div id="inicio" class="page active">
+            <h2>El Manifiesto</h2>
+            <p>Bienvenido a <strong>The Rubik's Theory</strong>. Esta no es una simple web de juegos; es la enciclopedia técnica definitiva. Aquí analizamos el cubo no como un juguete, sino como un sistema geométrico de 26 piezas orbitando un núcleo central fijo.</p>
+            <p>Nuestro objetivo es la comprensión absoluta. La mayoría de los recursos en línea se limitan a listar algoritmos. Nosotros analizamos la lógica algebraica tras cada giro. Si buscas el estándar de estudio, has llegado al lugar correcto. El cubo ya no tendrá secretos para ti.</p>
+        </div>
+
+        <div id="principiante" class="page">
+            <div id="fases-container"></div>
+        </div>
+    </div>
 </div>
 
 <script>
     const data = [
-        { t: "Fase 0: Anatomía y Orientación", c: `La base de la teoría es saber qué tienes en las manos.\nLo primero que debes entender es que el cubo no es un objeto sólido, sino un conjunto de 26 piezas que orbitan alrededor de un núcleo.\n\nLos Centros: * Solo tienen 1 color.\nIMPORTANTE: No se mueven. Si el centro es Blanco, esa cara siempre será blanca. El centro es tu punto de referencia absoluto. Apunta esto: El blanco siempre es opuesto al amarillo, el rojo al naranja y el verde al azul.\n\nLas Aristas: Tienen 2 colores.\nSon las piezas que forman la "cruz" en cada cara. Solo pueden ocupar el lugar de otra arista.\n\nLas Esquinas: * Tienen 3 colores.\nSon las piezas que completan las esquinas. Solo pueden ocupar el lugar de otra esquina.` },
-        
-        { t: "Fase 1: El Lenguaje Técnico (Notación)", c: "No podemos avanzar si no hablamos el mismo idioma. Copia esta tabla en tus apuntes.\n\nPara mover el cubo con precisión, cada cara tiene una letra (basada en su nombre en inglés). Un giro significa rotar esa cara 90 grados (un cuarto de vuelta).\n\nNotación:\nRecuerda: Cada letra gira en el sentido de las agujas del reloj.\n\nLas letras con ( ' ) significa que van al sentido contario de las normales.\nLas letras con un 2 detrás indican que se hacen dos giros en esa letra, da igual la dirección.\nU - Up (arriba)\nD - Down (abajo)\nF - Front (frente)\nR - Right (derecha)\nL - Left (izquierda)\nB - Back (detrás)" },
-        
-        { t: "Fase 2: El Primer Objetivo - La Cruz Perfecta", c: "No busques resolver colores. Busca alinear ejes.\nEl primer paso real es crear una cruz blanca en la cara superior. Pero no cualquier cruz.\nPaso A: Busca una arista que tenga color Blanco.\nPaso B: Mira su segundo color (por ejemplo, Rojo).\nPaso C: Lleva esa pieza a su sitio de forma que el Blanco conecte con el centro Blanco, y el Rojo conecte con el centro Rojo.\n\nDibujo para tus apuntes: Imagina una 'Línea' de color Rojo que baja desde la cara blanca hasta el centro rojo. Si los colores laterales no coinciden con sus centros, la cruz está mal hecha aunque veas el blanco arriba.\n\nEjercicio de Práctica\nAntes de pasar a las esquinas, intenta hacer la cruz blanca 5 veces seguidas. Asegúrate de que, al terminar, cada 'brazo' de la cruz coincida con el color del centro lateral." },
-        
-        { t: "Fase 3: Los Vértices y el Ciclo de Inserción", c: "Esta es, posiblemente, la fase más importante de toda tu formación. Aquí es donde pasamos de mover piezas de forma intuitiva a utilizar algoritmos.\nEn The Rubik's Theory, no llamamos a esto 'un truco', lo llamamos el Ciclo de Inserción, aunque en el mundo del cubing se conoce universalmente como el 'Sexy Move'.\n\n1. El concepto de 'Coordenada de Esquina'\nAntes de girar, identifica. Una esquina tiene 3 colores. Para que esté bien colocada, debe estar situada entre los 3 centros correspondientes.\nEjemplo: La esquina Blanco-Rojo-Verde debe ir justo en el hueco que une los centros blanco, rojo y verde.\n\n2. El Algoritmo Maestro: El Ciclo de 4 Movimientos\n📝 ANOTA ESTO EN TUS APUNTES:\n<code>R U R' U'</code>\nR: Subes la cara derecha.\nU: Giras la capa superior a la izquierda.\nR': Bajas la cara derecha.\nU': Giras la capa superior a la derecha.\n\n3. Cómo ejecutar la Fase 3:\nBusca: En la capa de arriba, busca una esquina que tenga color Blanco.\nPosiciona: Gira la capa superior hasta que esa esquina esté justo encima del hueco.\nEjecuta: Repite <code>R U R' U'</code> hasta que quede bien.\n\nLa Teoría tras el movimiento:\nEl movimiento R sube el 'hueco' a la zona de carga. El movimiento U inserta la pieza. R' devuelve el hueco a la base. U' recupera la posición.\n\n⚠️ Recordatorio: 'No te desesperes si la cara blanca parece desordenarse... Si mantienes la calma y completas los 4 movimientos, verás que todo vuelve a su sitio.'" },
-        
-        { t: "Fase 4: El Cinturón del Cubo (Segunda Capa)", c: "Objetivo: Colocar las 4 aristas del nivel medio.\n1. Preparación del 'Eje en T'\nBusca una arista en la capa superior que no tenga amarillo.\nGira la capa hasta que el color frontal coincida con su centro.\n\n2. Los Algoritmos de Inserción\n📝 COPIA ESTO:\nA. Si va a la DERECHA: <code>U R U' R' U' F' U F</code>\nB. Si va a la IZQUIERDA: <code>U' L' U L U F U' F'</code>\n\nRecordatorio: No estás 'moviendo piezas', estás emparejando. El primer movimiento aleja la arista para que, al subir la esquina, ambas se unan." },
-        
-        { t: "Fase 5: La Cruz Amarilla", c: "Objetivo: Dibujar una cruz de color amarillo.\n1. Identifica tu patrón:\n- El Punto: Solo el centro es amarillo.\n- La 'L' pequeña: Dos aristas forman una L.\n- La Línea: El centro y dos aristas forman una línea.\n\n2. El Algoritmo de Activación:\n📝 COPIA ESTO:\n<code>F (R U R' U') F'</code>\nF: Giras frontal derecha.\n(R U R' U'): Sexy Move.\nF': Devuelves frontal.\n\nPosicionamiento:\nSi tienes la 'L': Ponla a las 9:00.\nSi tienes la Línea: Ponla horizontal." },
-        
-        { t: "Fase 6: Orientar la Cruz (Coincidir Colores)", c: "Objetivo: Que los brazos coincidan con los centros.\n1. Busca coincidencias (Adyacentes o Opuestas).\n2. Posicionamiento: Si son Adyacentes, pon una en DELANTE y otra a la DERECHA.\n3. El Algoritmo de Intercambio (Sune):\n<code>R' U' R U' R' U2 R U'</code>\nEste movimiento es un baile coreografiado que hace dar una vuelta completa a las piezas." },
-        
-        { t: "Fase 7: Colocar las esquinas (Permutación)", c: "Objetivo: Que cada esquina esté en su 'casa'.\nBusca: ¿Alguna está en su lugar correcto?\nPosiciona: Pon la buena en la esquina abajo-derecha.\nEjecuta:\n<code>U R U' L' U R' U' L</code>" },
-        
-        { t: "Fase 8: Girar las esquinas (Orientación)", c: "Objetivo: El gran final.\nATENCIÓN: Este paso es el más peligroso. Sigue estas reglas:\n1. Gira el cubo: Pon la cara blanca hacia arriba.\n2. Enfoca: Esquina abajo-derecha sin amarillo.\n3. Ciclo:\n<code>R U R' U'</code>\nRepite hasta que el amarillo mire abajo. \nEL PASO CRUCIAL: Gira solo la cara inferior (D) para traer la siguiente esquina. No muevas el cubo completo." },
-        
-        { t: "🏆 Misión Cumplida: El Orden ha sido Restaurado", c: "Has logrado lo que la gran mayoría no intenta: enfrentar el caos y vencerlo.\n'El secreto no reside en la memoria, sino en la repetición. Si no practicas, no mejoras; si no repites, no trasciendes. El verdadero secreto es, y siempre será, la práctica.'\n\nBienvenido al club. El cubo ya no tiene secretos para ti." }
+        { t: "Fase 0: Anatomía y Orientación", c: "La base de la teoría es saber qué tienes en las manos.\nLo primero que debes entender es que el cubo no es un objeto sólido, sino un conjunto de 26 piezas que orbitan alrededor de un núcleo.\n\nLos Centros: Solo tienen 1 color. No se mueven. Si el centro es Blanco, esa cara siempre será blanca. El centro es tu punto de referencia absoluto. Apunta esto: El blanco siempre es opuesto al amarillo, el rojo al naranja y el verde al azul.\nLas Aristas: Tienen 2 colores. Son las piezas que forman la 'cruz' en cada cara. Solo pueden ocupar el lugar de otra arista.\nLas Esquinas: Tienen 3 colores. Son las piezas que completan las esquinas." },
+        { t: "Fase 1: El Lenguaje Técnico (Notación)", c: "No podemos avanzar si no hablamos el mismo idioma. Para mover el cubo con precisión, cada cara tiene una letra (U, D, F, R, L, B).\n- Letra sola: Sentido horario.\n- Letra con ('): Sentido anti-horario.\n- Letra con (2): Dos giros (180 grados).\n\nCada letra gira en el sentido de las agujas del reloj." },
+        { t: "Fase 2: El Primer Objetivo - La Cruz Perfecta", c: "No busques resolver colores. Busca alinear ejes.\nEl primer paso real es crear una cruz blanca en la cara superior.\nPaso A: Busca una arista blanca.\nPaso B: Mira su segundo color.\nPaso C: Lleva esa pieza de forma que el blanco conecte con el centro blanco y el color lateral con su respectivo centro.\n\nEjercicio: Intenta hacer la cruz blanca 5 veces seguidas." },
+        { t: "Fase 3: Los Vértices y el Ciclo de Inserción", c: "Esta es la fase más importante. En The Rubik's Theory lo llamamos Ciclo de Inserción (Sexy Move).\n\nAlgoritmo Maestro: <code>R U R' U'</code>\n1. Busca esquina blanca.\n2. Posiciónala sobre su hueco.\n3. Ejecuta <code>R U R' U'</code> hasta que encaje.\n\nLa Teoría: El movimiento R sube el 'hueco' de la base, U inserta la pieza, R' baja el hueco y U' recupera la posición." },
+        { t: "Fase 4: El Cinturón del Cubo (Segunda Capa)", c: "Objetivo: Colocar las 4 aristas del nivel medio.\n\nAlgoritmos:\nDerecha: <code>U R U' R' U' F' U F</code>\nIzquierda: <code>U' L' U L U F U' F'</code>\n\nNo estás moviendo piezas, estás emparejando. Si el blanco sube a la superficie, vas por buen camino." },
+        { t: "Fase 5: La Cruz Amarilla", c: "Objetivo: Dibujar una cruz de color amarillo.\nIdentifica: Punto, L (9:00), Línea (horizontal).\nAlgoritmo: <code>F (R U R' U') F'</code>.\n\nRecordatorio: Cada giro frontal debe ser devuelto (F') para proteger la base que construiste." },
+        { t: "Fase 6: Orientar la Cruz (Coincidir Colores)", c: "Objetivo: Alinear brazos de la cruz con centros laterales.\nAlgoritmo (Sune): <code>R' U' R U' R' U2 R U'</code>.\n\nEste movimiento es un baile coreografiado que altera la posición de las aristas amarillas sin tocar nada de lo resuelto abajo." },
+        { t: "Fase 7: Colocar las esquinas (Permutación)", c: "Objetivo: Que cada esquina esté en su 'casa'.\nAlgoritmo: <code>U R U' L' U R' U' L</code>.\nSi ninguna está bien, haz el algoritmo desde cualquier posición." },
+        { t: "Fase 8: Girar las esquinas (Orientación)", c: "El gran final. Gira el cubo (blanco arriba, amarillo abajo).\nAlgoritmo: <code>(R U R' U')</code>.\n\nPASO CRUCIAL: No muevas el cubo completo. Gira solo la capa inferior (D) para traer la siguiente esquina mal puesta. Si te equivocas, tendrás que empezar desde cero." },
+        { t: "🏆 Misión Cumplida", c: "Has vencido al caos. La maestría no nace de la inteligencia pura, sino de la práctica constante.\n\n'El secreto no reside en la memoria, sino en la repetición. Si no practicas, no mejoras; si no repites, no trasciendes. El verdadero secreto es, y siempre será, la práctica.'" }
     ];
 
-    const app = document.getElementById('app');
+    function showPage(id) {
+        document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+        document.getElementById(id).classList.add('active');
+    }
+
+    const container = document.getElementById('fases-container');
     data.forEach((item, i) => {
-        app.innerHTML += `
+        container.innerHTML += `
             <div class="step-container">
                 <button class="step-btn" onclick="toggle(${i})">${item.t} <span>▼</span></button>
                 <div id="content-${i}" class="step-content">
@@ -72,8 +100,7 @@
     });
 
     function toggle(i) {
-        const el = document.getElementById(`content-${i}`);
-        el.classList.toggle('active-content');
+        document.getElementById(`content-${i}`).classList.toggle('active-content');
     }
 </script>
 </body>
