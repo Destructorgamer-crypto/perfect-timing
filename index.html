@@ -6,7 +6,6 @@
     <title>The Rubik's Theory | La Enciclopedia Definitiva</title>
     <style>
         :root { --c-white: #fff; --c-red: #ff3e3e; --c-blue: #3e7bff; --c-orange: #ff9f3e; --c-green: #3eff5e; --c-yellow: #ffe63e; }
-        
         body { background-color: #050505; color: #ccc; font-family: 'Segoe UI', sans-serif; margin: 0; padding: 20px; line-height: 1.6; }
 
         .wrapper {
@@ -29,10 +28,20 @@
 
         .page { display: none; max-width: 800px; margin: auto; }
         .active { display: block; animation: fadeIn 0.6s; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 
         h2 { color: #fff; border-left: 3px solid var(--c-blue); padding-left: 15px; margin-top: 40px; }
-        .step { background: #111; padding: 15px; border-radius: 8px; margin-bottom: 15px; border-left: 4px solid var(--c-red); }
+        
+        /* Estilo para los pasos y desplegables */
+        .step-container { margin-bottom: 15px; }
+        .step-btn { 
+            width: 100%; background: #111; color: #fff; border: 1px solid #333; 
+            padding: 15px; text-align: left; cursor: pointer; border-radius: 5px; 
+        }
+        .step-content { 
+            display: none; padding: 20px; background: #0a0a0a; 
+            border: 1px solid #222; border-top: none; 
+        }
     </style>
 </head>
 <body>
@@ -41,52 +50,37 @@
     <div class="container">
         <header>
             <h1>THE RUBIK'S THEORY</h1>
-            <p>El repositorio definitivo sobre la física y lógica del Cubo de Rubik.</p>
         </header>
 
         <nav>
             <button onclick="showPage('inicio')">Inicio</button>
             <button onclick="showPage('principiante')">Principiante</button>
-            <button onclick="showPage('intermedio')">Intermedio</button>
-            <button onclick="showPage('avanzado')">Avanzado</button>
         </nav>
 
         <div id="inicio" class="page active">
-            <h2>Filosofía del Proyecto</h2>
-            <p>Bienvenido a The Rubik's Theory. La mayoría de los recursos en línea se limitan a listar algoritmos sin explicación. Este proyecto nace para romper esa tendencia: aquí analizamos el cubo como un sistema geométrico y algebraico.</p>
-            <p>Desde la comprensión de los centros fijos hasta la teoría de grupos aplicada a los algoritmos de permutación, nuestro objetivo es que no necesites memorizar, sino que seas capaz de <strong>visualizar el estado del cubo</strong> antes de realizar cualquier movimiento. Estás ante el estándar definitivo de estudio.</p>
+            <h2>El estándar</h2>
+            <p>Aquí reside toda la información necesaria para el dominio total del cubo.</p>
         </div>
 
         <div id="principiante" class="page">
-            <h2>Método Principiante: La Construcción por Capas</h2>
-            <p>El método ideal para principiantes se basa en la <strong>resolución capa por capa</strong>, lo que permite asimilar cómo los movimientos afectan a las piezas sin destruir lo ya resuelto.</p>
+            <h2>Método Principiante: Paso a Paso</h2>
             
-            <div class="step">
-                <h3>1. La Cruz Blanca</h3>
-                <p>El objetivo es crear una cruz en la cara blanca que coincida con los centros laterales. Es intuitivo y no requiere algoritmos.</p>
+            <!-- Ejemplo de paso con desplegable -->
+            <div class="step-container">
+                <button class="step-btn" onclick="toggleStep('p1')">1. La Cruz Blanca ▶</button>
+                <div id="p1" class="step-content">
+                    <p>La cruz blanca es la base de todo. Debes alinear las aristas blancas con su centro lateral correspondiente. No hay algoritmos aquí, es pura intuición espacial.</p>
+                </div>
             </div>
-            <div class="step">
-                <h3>2. Primera Capa (Esquinas)</h3>
-                <p>Insertar las esquinas blancas. Aquí aprendes el "algoritmo sexy" (R U R' U'), esencial para mover piezas sin alterar la cruz.</p>
-            </div>
-            <div class="step">
-                <h3>3. Segunda Capa (Aristas)</h3>
-                <p>Resolución de las aristas de la capa central usando un algoritmo específico para insertar piezas desde la capa superior a su posición correcta.</p>
-            </div>
-            <div class="step">
-                <h3>4. Última Capa (OLL y PLL)</h3>
-                <p>Orientar la cara superior amarilla y permutar las piezas finales mediante algoritmos de secuencia fija.</p>
-            </div>
-        </div>
 
-        <div id="intermedio" class="page">
-            <h2>Nivel Intermedio</h2>
-            <p>En desarrollo: Introducción a F2L y optimización de movimientos.</p>
-        </div>
-        
-        <div id="avanzado" class="page">
-            <h2>Nivel Avanzado</h2>
-            <p>En desarrollo: Teoría avanzada de permutaciones y sistemas de velocidad.</p>
+            <div class="step-container">
+                <button class="step-btn" onclick="toggleStep('p2')">2. Primera Capa (Esquinas) ▶</button>
+                <div id="p2" class="step-content">
+                    <p>Insertar las esquinas. Aquí es donde introduces el algoritmo fundamental: <strong>R U R' U'</strong> (El Sexy Move).</p>
+                </div>
+            </div>
+            
+            <!-- Puedes añadir hasta el paso 7 siguiendo este mismo formato -->
         </div>
     </div>
 </div>
@@ -95,6 +89,10 @@
     function showPage(id) {
         document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
         document.getElementById(id).classList.add('active');
+    }
+    function toggleStep(id) {
+        const el = document.getElementById(id);
+        el.style.display = (el.style.display === 'block') ? 'none' : 'block';
     }
 </script>
 </body>
