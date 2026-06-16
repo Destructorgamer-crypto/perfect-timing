@@ -31,8 +31,8 @@
         .active { display: block; animation: fadeIn 0.6s; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
-        h2 { color: #fff; border-left: 3px solid var(--c-blue); padding-left: 15px; }
-        p { margin-bottom: 20px; }
+        h2 { color: #fff; border-left: 3px solid var(--c-blue); padding-left: 15px; margin-top: 40px; }
+        .step { background: #111; padding: 15px; border-radius: 8px; margin-bottom: 15px; border-left: 4px solid var(--c-red); }
     </style>
 </head>
 <body>
@@ -41,7 +41,7 @@
     <div class="container">
         <header>
             <h1>THE RUBIK'S THEORY</h1>
-            <p>La enciclopedia técnica para dominar el cubo.</p>
+            <p>El repositorio definitivo sobre la física y lógica del Cubo de Rubik.</p>
         </header>
 
         <nav>
@@ -52,23 +52,41 @@
         </nav>
 
         <div id="inicio" class="page active">
-            <h2>Bienvenido al estándar</h2>
-            <p>Esta es la web definitiva. Aquí encontrarás desde la notación oficial hasta la teoría avanzada de grupos aplicada a los cubos.</p>
+            <h2>Filosofía del Proyecto</h2>
+            <p>Bienvenido a The Rubik's Theory. La mayoría de los recursos en línea se limitan a listar algoritmos sin explicación. Este proyecto nace para romper esa tendencia: aquí analizamos el cubo como un sistema geométrico y algebraico.</p>
+            <p>Desde la comprensión de los centros fijos hasta la teoría de grupos aplicada a los algoritmos de permutación, nuestro objetivo es que no necesites memorizar, sino que seas capaz de <strong>visualizar el estado del cubo</strong> antes de realizar cualquier movimiento. Estás ante el estándar definitivo de estudio.</p>
         </div>
 
         <div id="principiante" class="page">
-            <h2>Método Principiante</h2>
-            <p>Explicación paso a paso: Cruz, F2L básico, orientación y permutación.</p>
+            <h2>Método Principiante: La Construcción por Capas</h2>
+            <p>El método ideal para principiantes se basa en la <strong>resolución capa por capa</strong>, lo que permite asimilar cómo los movimientos afectan a las piezas sin destruir lo ya resuelto.</p>
+            
+            <div class="step">
+                <h3>1. La Cruz Blanca</h3>
+                <p>El objetivo es crear una cruz en la cara blanca que coincida con los centros laterales. Es intuitivo y no requiere algoritmos.</p>
+            </div>
+            <div class="step">
+                <h3>2. Primera Capa (Esquinas)</h3>
+                <p>Insertar las esquinas blancas. Aquí aprendes el "algoritmo sexy" (R U R' U'), esencial para mover piezas sin alterar la cruz.</p>
+            </div>
+            <div class="step">
+                <h3>3. Segunda Capa (Aristas)</h3>
+                <p>Resolución de las aristas de la capa central usando un algoritmo específico para insertar piezas desde la capa superior a su posición correcta.</p>
+            </div>
+            <div class="step">
+                <h3>4. Última Capa (OLL y PLL)</h3>
+                <p>Orientar la cara superior amarilla y permutar las piezas finales mediante algoritmos de secuencia fija.</p>
+            </div>
         </div>
 
         <div id="intermedio" class="page">
             <h2>Nivel Intermedio</h2>
-            <p>Optimización, reconocimiento y algoritmos de transición.</p>
+            <p>En desarrollo: Introducción a F2L y optimización de movimientos.</p>
         </div>
         
         <div id="avanzado" class="page">
             <h2>Nivel Avanzado</h2>
-            <p>Teoría de permutaciones, algoritmos de velocidad y métodos profesionales (CFOP, Roux, ZZ).</p>
+            <p>En desarrollo: Teoría avanzada de permutaciones y sistemas de velocidad.</p>
         </div>
     </div>
 </div>
