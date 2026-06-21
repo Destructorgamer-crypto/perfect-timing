@@ -92,7 +92,7 @@
   <!-- === ZONA SECRETA === -->
   <div id="secret" class="content section">
     <h2>🔓 Zona Secreta</h2>
-    <p>Has encontrado el acceso oculto. Disfruta.</p>
+    <p>Has encontrado el acceso oculto. Disfruta de los juegos y la música.</p>
 
     <h3>🎵 Música</h3>
     <iframe src="https://open.spotify.com/embed/playlist/37i9dQZF1DXcBWIGoYBM5M" width="100%" height="380" frameborder="0" allowfullscreen></iframe>
@@ -123,14 +123,14 @@
   </div>
 
   <script>
-    let titleClicks = 0;
-    const CLICKS_NEEDED = 5;
     let games = JSON.parse(localStorage.getItem('rubikGames')) || [
       { name: "2048", url: "https://play2048.co/" },
       { name: "Tetris", url: "https://tetris.com/play-tetris" },
       { name: "Snake", url: "https://playsnake.org/" },
       { name: "Pac-Man", url: "https://freepacman.org/" }
     ];
+
+    const ADMIN_PASSWORD = "rubik2026";   // Cambia esto si quieres
 
     function saveGames() {
       localStorage.setItem('rubikGames', JSON.stringify(games));
@@ -179,18 +179,25 @@
       });
     }
 
+    // Sistema de desbloqueo una sola vez
     function clickTitle() {
-      titleClicks++;
-      if (titleClicks >= CLICKS_NEEDED) {
-        document.getElementById('theory').classList.remove('active');
-        document.getElementById('secret').classList.add('active');
-        titleClicks = 0;
+      if (localStorage.getItem('secretUnlocked') === 'true') return;
+
+      let clicks = parseInt(localStorage.getItem('titleClicks') || '0') + 1;
+      localStorage.setItem('titleClicks', clicks);
+
+      if (clicks >= 5) {
+        localStorage.setItem('secretUnlocked', 'true');
+        unlockSecret();
       }
     }
 
-    // Admin
-    const ADMIN_PASSWORD = "rubik2026";   // ← Cambia esto
+    function unlockSecret() {
+      document.getElementById('theory').classList.remove('active');
+      document.getElementById('secret').classList.add('active');
+    }
 
+    // Admin
     function showAdmin() {
       document.getElementById('admin-panel').style.display = 'block';
     }
@@ -214,6 +221,11 @@
     // Inicializar
     window.onload = () => {
       renderGames();
+
+      // Verificar si ya estaba desbloqueado
+      if (localStorage.getItem('secretUnlocked') === 'true') {
+        unlockSecret();
+      }
     };
   </script>
 </body>
