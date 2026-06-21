@@ -63,7 +63,7 @@
 </head>
 <body>
 
-  <header onclick="clickTitle()">
+  <header onclick="goToSecret()">
     <h1>THE RUBIK'S THEORY</h1>
     <p class="subtitle">Comprende el cubo antes de dominarlo</p>
   </header>
@@ -79,23 +79,24 @@
     <h3>Notación Oficial</h3>
     <p>Las letras F, R, U, B, L, D representan las caras del cubo (Front, Right, Up, Back, Left, Down). Un apostrofe (') indica giro en sentido antihorario.</p>
 
-    <div style="margin: 2rem 0;">
-      <iframe width="100%" height="415" src="https://www.youtube.com/embed/7j4x2z5z7zM" frameborder="0" allowfullscreen></iframe>
-    </div>
-
     <h3>Métodos de Resolución</h3>
     <p>Existen varios métodos: Principiante (capa por capa), CFOP (el más usado por speedcubers), Roux, ZZ, entre otros.</p>
     
-    <p>¿Quieres profundizar más? Sigue explorando esta web. Hay mucho más por descubrir...</p>
+    <p>¿Quieres profundizar más? Haz clic en el título de arriba para descubrir contenido adicional.</p>
   </div>
 
   <!-- === ZONA SECRETA === -->
   <div id="secret" class="content section">
     <h2>🔓 Zona Secreta</h2>
-    <p>Has encontrado el acceso oculto. Disfruta de los juegos y la música.</p>
+    <p>Has encontrado el acceso oculto. Disfruta.</p>
 
     <h3>🎵 Música</h3>
-    <iframe src="https://open.spotify.com/embed/playlist/37i9dQZF1DXcBWIGoYBM5M" width="100%" height="380" frameborder="0" allowfullscreen></iframe>
+    <div style="left: 0; width: 100%; height: 352px; position: relative;">
+      <iframe src="https://open.spotify.com/embed/playlist/6hfxHDFSpmrx2EeA7JKwjv?utm_source=oembed" 
+              style="top: 0; left: 0; width: 100%; height: 100%; position: absolute; border: 0; border-radius: 12px;" 
+              allowfullscreen allow="clipboard-write *; encrypted-media *; fullscreen *; picture-in-picture *;">
+      </iframe>
+    </div>
 
     <h3>🎮 Juegos</h3>
     <div id="games-grid" class="games-grid"></div>
@@ -179,20 +180,7 @@
       });
     }
 
-    // Sistema de desbloqueo una sola vez
-    function clickTitle() {
-      if (localStorage.getItem('secretUnlocked') === 'true') return;
-
-      let clicks = parseInt(localStorage.getItem('titleClicks') || '0') + 1;
-      localStorage.setItem('titleClicks', clicks);
-
-      if (clicks >= 5) {
-        localStorage.setItem('secretUnlocked', 'true');
-        unlockSecret();
-      }
-    }
-
-    function unlockSecret() {
+    function goToSecret() {
       document.getElementById('theory').classList.remove('active');
       document.getElementById('secret').classList.add('active');
     }
@@ -221,11 +209,6 @@
     // Inicializar
     window.onload = () => {
       renderGames();
-
-      // Verificar si ya estaba desbloqueado
-      if (localStorage.getItem('secretUnlocked') === 'true') {
-        unlockSecret();
-      }
     };
   </script>
 </body>
