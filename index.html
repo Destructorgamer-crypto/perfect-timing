@@ -11,7 +11,7 @@
     body {
       margin: 0; padding: 0; font-family: 'Segoe UI', system-ui, sans-serif;
       line-height: 1.7;
-      transition: all 0.6s ease;
+      overflow-x: hidden;
     }
 
     /* ====================== TEORÍA ====================== */
@@ -24,6 +24,7 @@
       color: white;
       padding: 4rem 1rem 3rem;
       text-align: center;
+      transition: all 0.8s ease;
     }
     h1 {
       font-size: 3rem;
@@ -35,61 +36,62 @@
     h1:hover { transform: scale(1.05); }
 
     .content {
-      max-width: 850px;
+      max-width: 900px;
       margin: 3rem auto;
       padding: 0 1.5rem;
+      transition: opacity 1s ease;
     }
 
-    /* ====================== ZONA SECRETA (Rojo y Negro) ====================== */
+    /* ====================== ZONA SECRETA ====================== */
     .secret-mode {
       background: #000000;
       color: #ff3333;
     }
-    .secret-header {
-      background: #1a0000;
-      padding: 2.5rem 1rem;
-      text-align: center;
-      border-bottom: 4px solid var(--accent);
+    .secret-content {
+      opacity: 0;
+      transition: opacity 1.5s ease;
     }
-    .secret-header h1 {
-      font-size: 2.6rem;
-      margin: 0;
-      letter-spacing: 4px;
+    .secret-content.show {
+      opacity: 1;
     }
 
     button {
       background: transparent;
       border: 2px solid var(--accent);
       color: #ff6666;
-      padding: 14px 24px;
-      margin: 10px;
-      font-size: 1.1rem;
+      padding: 14px 28px;
+      margin: 12px;
+      font-size: 1.15rem;
       cursor: pointer;
       transition: all 0.3s;
     }
     button:hover {
       background: var(--accent);
       color: black;
-      transform: translateY(-3px);
+      transform: translateY(-4px);
     }
 
     .games-grid {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-      gap: 18px;
+      gap: 20px;
       margin-top: 2rem;
       opacity: 0;
-      transition: opacity 1.2s ease;
+      transform: translateY(30px);
+      transition: all 1.2s ease;
     }
-    .games-grid.show { opacity: 1; }
+    .games-grid.show {
+      opacity: 1;
+      transform: translateY(0);
+    }
 
-    /* Canvas para lluvia binaria */
+    /* Lluvia Matrix */
     #binary-rain {
       position: fixed;
       top: 0; left: 0;
       width: 100%; height: 100%;
       z-index: -1;
-      opacity: 0.15;
+      opacity: 0.25;
       pointer-events: none;
     }
 
@@ -109,43 +111,54 @@
 
   <!-- Header Teoría -->
   <header class="theory-header" id="theory-header">
-    <h1 onclick="goToSecret()">THE RUBIK'S THEORY</h1>
-    <p style="margin-top: 10px; font-size: 1.25rem; opacity: 0.9;">Comprende el cubo antes de dominarlo</p>
+    <h1 onclick="enterSecret()">THE RUBIK'S THEORY</h1>
+    <p style="margin-top: 12px; font-size: 1.3rem; opacity: 0.95;">Comprende el cubo antes de dominarlo</p>
   </header>
 
-  <!-- === TEORÍA === -->
+  <!-- === TEORÍA (contenido ampliado) === -->
   <div id="theory" class="content">
     <h2>La Teoría del Cubo de Rubik</h2>
-    <p>El Cubo de Rubik, inventado en 1974 por Ernő Rubik, es uno de los rompecabezas más famosos del mundo. Detrás de su apariencia sencilla se esconde una enorme complejidad matemática.</p>
+    <p>El Cubo de Rubik fue inventado en 1974 por el arquitecto y profesor húngaro Ernő Rubik. Originalmente lo creó como una herramienta para enseñar geometría tridimensional a sus alumnos, pero pronto se convirtió en uno de los juguetes más vendidos de la historia.</p>
     
-    <h3>Permutaciones</h3>
-    <p>El cubo 3x3 tiene más de 43 quintillones de posiciones posibles.</p>
+    <h3>Complejidad Matemática</h3>
+    <p>El cubo 3x3 tiene exactamente <strong>43.252.003.274.489.856.000</strong> combinaciones posibles. Esto equivale a más de 43 quintillones de posiciones distintas. Sin embargo, todas ellas son resolubles en un máximo de 20 movimientos (God's Number).</p>
     
-    <h3>Notación</h3>
-    <p>Se utiliza la notación estándar: F (Front), R (Right), U (Up), B (Back), L (Left), D (Down).</p>
-    
-    <h3>Métodos</h3>
-    <p>Los más populares son el método principiante y el CFOP, utilizado por los speedcubers profesionales.</p>
+    <h3>Notación Oficial</h3>
+    <p>Se utilizan las siguientes letras para indicar las caras:<br>
+    <strong>F</strong> (Front), <strong>R</strong> (Right), <strong>U</strong> (Up), <strong>B</strong> (Back), <strong>L</strong> (Left), <strong>D</strong> (Down).<br>
+    Un apóstrofe (') indica giro en sentido contrario a las agujas del reloj.</p>
+
+    <h3>Método Principiante - Los 7 Pasos</h3>
+    <p>El método más recomendado para principiantes se divide en 7 pasos:</p>
+    <ol>
+      <li><strong>Cruz Blanca</strong>: Formar una cruz en la cara blanca con los bordes correctamente alineados.</li>
+      <li><strong>Esquinas Blancas</strong>: Colocar las cuatro esquinas blancas en su posición correcta.</li>
+      <li><strong>Capa Media</strong>: Resolver los cuatro bordes de la capa intermedia.</li>
+      <li><strong>Cruz Amarilla</strong>: Crear una cruz en la cara amarilla.</li>
+      <li><strong>Orientar Bordes Amarillos</strong>: Colocar los bordes amarillos en su posición correcta.</li>
+      <li><strong>Esquinas Amarillas</strong>: Posicionar correctamente las esquinas de la última capa.</li>
+      <li><strong>Orientar Esquinas Amarillas</strong>: Girar las esquinas para que todos los colores coincidan.</li>
+    </ol>
+
+    <p>Este método es accesible para cualquier persona y es la base para luego aprender métodos más avanzados como el CFOP (el más utilizado en competiciones).</p>
+
+    <p>Haz clic en el título superior para acceder al contenido oculto.</p>
   </div>
 
   <!-- === ZONA SECRETA === -->
-  <div id="secret" class="content" style="display: none;">
-    <header class="secret-header">
-      <h1>ZONA SECRETA</h1>
-    </header>
+  <div id="secret" style="display: none;">
+    <canvas id="binary-rain"></canvas>
+    
+    <div class="secret-content" id="secret-content">
+      <div class="content">
+        <div id="games-grid" class="games-grid"></div>
 
-    <div class="content">
-      <h2 style="text-align:center; margin: 2rem 0;">Juegos</h2>
-      <div id="games-grid" class="games-grid"></div>
-
-      <div style="text-align: center; margin-top: 3rem;">
-        <button onclick="showAdmin()">Panel de Administrador</button>
+        <div style="text-align: center; margin: 3rem 0;">
+          <button onclick="showAdmin()">Panel de Administrador</button>
+        </div>
       </div>
     </div>
   </div>
-
-  <!-- Canvas Lluvia Binaria -->
-  <canvas id="binary-rain"></canvas>
 
   <!-- === PANEL ADMIN === -->
   <div id="admin-panel" class="admin-panel">
@@ -167,7 +180,6 @@
   </div>
 
   <script>
-    // Datos de juegos
     let games = JSON.parse(localStorage.getItem('rubikGames')) || [
       { name: "2048", url: "https://play2048.co/" },
       { name: "Tetris", url: "https://tetris.com/play-tetris" },
@@ -177,14 +189,11 @@
 
     const ADMIN_PASSWORD = "rubik2026";
 
-    function saveGames() {
-      localStorage.setItem('rubikGames', JSON.stringify(games));
-    }
+    function saveGames() { localStorage.setItem('rubikGames', JSON.stringify(games)); }
 
     function renderGames() {
       const container = document.getElementById('games-grid');
       container.innerHTML = '';
-      
       games.forEach(game => {
         const btn = document.createElement('button');
         btn.textContent = game.name;
@@ -207,7 +216,7 @@
     }
 
     function removeGame(index) {
-      if (confirm('Eliminar este juego?')) {
+      if (confirm('¿Eliminar este juego?')) {
         games.splice(index, 1);
         saveGames();
         renderGames();
@@ -220,25 +229,31 @@
       ul.innerHTML = '';
       games.forEach((game, i) => {
         const li = document.createElement('li');
-        li.style.margin = '8px 0';
+        li.style.margin = '10px 0';
         li.innerHTML = `${game.name} — <button onclick="removeGame(${i})">Eliminar</button>`;
         ul.appendChild(li);
       });
     }
 
-    // Ir a zona secreta con animación
-    function goToSecret() {
-      document.getElementById('theory').style.display = 'none';
-      const secret = document.getElementById('secret');
-      secret.style.display = 'block';
+    // Transición con animación
+    function enterSecret() {
+      const theory = document.getElementById('theory');
+      const header = document.getElementById('theory-header');
       
-      document.body.classList.remove('theory-mode');
-      document.body.classList.add('secret-mode');
+      theory.style.opacity = '0';
+      header.style.opacity = '0';
 
-      // Animación de aparición de los juegos
       setTimeout(() => {
-        document.getElementById('games-grid').classList.add('show');
-      }, 400);
+        document.body.classList.remove('theory-mode');
+        document.body.classList.add('secret-mode');
+        
+        document.getElementById('secret').style.display = 'block';
+        
+        setTimeout(() => {
+          document.getElementById('secret-content').classList.add('show');
+          document.getElementById('games-grid').classList.add('show');
+        }, 100);
+      }, 800);
     }
 
     // Admin
@@ -262,7 +277,7 @@
       document.getElementById('admin-pass').value = '';
     }
 
-    // Lluvia binaria (Matrix style)
+    // Lluvia binaria mejorada
     function createBinaryRain() {
       const canvas = document.getElementById('binary-rain');
       const ctx = canvas.getContext('2d');
@@ -271,19 +286,19 @@
         canvas.height = window.innerHeight;
         canvas.width = window.innerWidth;
       }
-      window.addEventListener('resize', resize);
       resize();
+      window.addEventListener('resize', resize);
 
       const chars = '01';
-      const fontSize = 14;
+      const fontSize = 15;
       const columns = canvas.width / fontSize;
       const drops = Array(Math.floor(columns)).fill(1);
 
       function draw() {
-        ctx.fillStyle = 'rgba(0, 0, 0, 0.08)';
+        ctx.fillStyle = 'rgba(0, 0, 0, 0.1)';
         ctx.fillRect(0, 0, canvas.width, canvas.height);
         
-        ctx.fillStyle = '#ff3333';
+        ctx.fillStyle = '#ff4444';
         ctx.font = `${fontSize}px monospace`;
 
         for (let i = 0; i < drops.length; i++) {
@@ -297,7 +312,7 @@
         }
       }
 
-      setInterval(draw, 35);
+      setInterval(draw, 40);
     }
 
     // Inicializar
