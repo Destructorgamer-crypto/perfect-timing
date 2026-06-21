@@ -9,62 +9,56 @@
   
   <style>
     :root { --accent: #ff0000; }
-    body {
+    body, html {
       margin: 0; padding: 0; font-family: 'Segoe UI', system-ui, sans-serif;
-      line-height: 1.7; overflow-x: hidden;
+      background: #000; color: #ff3333; overflow: hidden; height: 100vh;
     }
 
-    /* TEORÍA */
-    .theory-mode { background: #0f0f0f; color: #f0f0f0; }
-    .theory-header {
+    header {
       background: linear-gradient(135deg, #e30613, #ff6600);
       color: white;
-      padding: 4rem 1rem 3rem;
+      padding: 4.5rem 1rem 3rem;
       text-align: center;
-      transition: all 0.8s ease;
+      cursor: pointer;
     }
     h1 {
-      font-size: 3rem;
+      font-size: 3.2rem;
       margin: 0;
-      letter-spacing: 6px;
-      cursor: pointer;
-      transition: transform 0.3s;
+      letter-spacing: 8px;
     }
     h1:hover { transform: scale(1.05); }
 
-    .content { max-width: 900px; margin: 3rem auto; padding: 0 1.5rem; }
-
-    /* ZONA SECRETA */
-    .secret-mode { background: #000000; color: #ff3333; }
-    .secret-content {
-      opacity: 0;
-      transition: all 1.5s ease;
+    .secret-container {
+      height: calc(100vh - 220px);
+      overflow-y: auto;
       padding-top: 30px;
+      text-align: center;
+      scrollbar-width: none;
     }
-    .secret-content.show { opacity: 1; }
+    .secret-container::-webkit-scrollbar { display: none; }
 
     button {
       background: transparent;
       border: 2px solid var(--accent);
       color: #ff6666;
-      padding: 14px 32px;
-      margin: 10px;
-      font-size: 1.15rem;
+      padding: 16px 36px;
+      margin: 12px;
+      font-size: 1.2rem;
       cursor: pointer;
       transition: all 0.3s;
     }
     button:hover {
       background: var(--accent);
       color: black;
-      transform: translateY(-3px);
+      transform: translateY(-4px);
     }
 
     .games-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-      gap: 18px;
-      margin: 15px auto;
-      max-width: 1100px;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 22px;
+      max-width: 1200px;
+      margin: 20px auto;
       padding: 0 20px;
     }
 
@@ -73,26 +67,24 @@
       top: 0; left: 0;
       width: 100%; height: 100%;
       z-index: -1;
-      opacity: 0.55;
+      opacity: 0.5;
       pointer-events: none;
     }
   </style>
 </head>
-<body class="theory-mode">
+<body>
 
-  <header class="theory-header" id="theory-header">
-    <h1 onclick="enterSecret()">THE RUBIK'S THEORY</h1>
-    <p style="margin-top: 12px; font-size: 1.3rem; opacity: 0.95;">Comprende el cubo antes de dominarlo</p>
+  <header onclick="enterSecret()">
+    <h1>THE RUBIK'S THEORY</h1>
+    <p style="margin-top: 15px; font-size: 1.35rem; opacity: 0.95;">Comprende el cubo antes de dominarlo</p>
   </header>
 
   <!-- TEORÍA -->
-  <div id="theory" class="content">
+  <div id="theory" style="padding: 40px 20px; text-align:center; max-width:900px; margin:0 auto;">
     <h2>La Teoría del Cubo de Rubik</h2>
-    <p>El Cubo de Rubik fue inventado en 1974 por el arquitecto y profesor húngaro Ernő Rubik.</p>
-    <h3>Complejidad Matemática</h3>
-    <p>El cubo 3x3 tiene exactamente <strong>43.252.003.274.489.856.000</strong> combinaciones posibles.</p>
+    <p>El Cubo de Rubik fue inventado en 1974 por Ernő Rubik.</p>
     <h3>Método Principiante - Los 7 Pasos</h3>
-    <ol>
+    <ol style="display:inline-block; text-align:left; font-size:1.1rem;">
       <li>Cruz Blanca</li>
       <li>Esquinas Blancas</li>
       <li>Capa Media</li>
@@ -107,32 +99,42 @@
   <div id="secret" style="display: none;">
     <canvas id="binary-rain"></canvas>
     
-    <div class="secret-content" id="secret-content">
-      <div class="content" style="text-align: center;">
-        <button onclick="toggleSpotify()">Abrir Spotify</button>
-        <div id="games-grid" class="games-grid"></div>
+    <div class="secret-container">
+      <button onclick="toggleSpotify()">Abrir Spotify</button>
+      
+      <div id="games-grid" class="games-grid"></div>
+
+      <div style="margin-top: 40px;">
         <button onclick="showAdmin()">Panel de Administrador</button>
       </div>
     </div>
   </div>
 
-  <!-- Panel Admin -->
-  <div id="admin-panel" style="display:none; position:fixed; top:50%; left:50%; transform:translate(-50%,-50%); background:#110000; border:3px solid #ff0000; padding:25px; z-index:10000; color:#ff9999; max-width:500px; width:90%;">
+  <!-- Spotify -->
+  <div id="spotify-embed" style="display:none; position:fixed; bottom:20px; left:50%; transform:translateX(-50%); z-index:9999; width:90%; max-width:720px;">
+    <div style="width:100%; height:352px; position:relative; background:#000; border-radius:12px; overflow:hidden;">
+      <iframe src="https://open.spotify.com/embed/playlist/6hfxHDFSpmrx2EeA7JKwjv" 
+              style="width:100%; height:100%; border:0;" allowfullscreen></iframe>
+    </div>
+    <button onclick="toggleSpotify()" style="margin-top:8px; background:#ff0000; color:black; width:100%;">Cerrar Spotify</button>
+  </div>
+
+  <!-- Admin Panel -->
+  <div id="admin-panel" style="display:none; position:fixed; top:50%; left:50%; transform:translate(-50%,-50%); background:#110000; border:3px solid #ff0000; padding:25px; z-index:10000; color:#ff9999; max-width:480px; width:90%;">
     <h3>Panel de Administrador</h3>
-    <input type="password" id="admin-pass" placeholder="Contraseña">
-    <button onclick="loginAdmin()">Entrar</button>
+    <input type="password" id="admin-pass" placeholder="Contraseña" style="width:100%; padding:12px; margin:10px 0;">
+    <button onclick="loginAdmin()" style="width:100%;">Entrar</button>
     
-    <div id="admin-content" style="display:none; margin-top:15px;">
-      <input type="text" id="gname" placeholder="Nombre del juego">
-      <input type="url" id="gurl" placeholder="URL del juego">
-      <button onclick="addGame()">Añadir Juego</button>
-      <ul id="game-list" style="text-align:left; margin-top:15px;"></ul>
-      <button onclick="logoutAdmin()">Cerrar Sesión</button>
+    <div id="admin-content" style="display:none; margin-top:20px;">
+      <input type="text" id="gname" placeholder="Nombre del juego" style="width:100%; padding:10px; margin:8px 0;">
+      <input type="url" id="gurl" placeholder="URL del juego" style="width:100%; padding:10px; margin:8px 0;">
+      <button onclick="addGame()" style="width:100%;">Añadir Juego</button>
+      <ul id="game-list" style="text-align:left; margin-top:20px;"></ul>
+      <button onclick="logoutAdmin()" style="width:100%; margin-top:15px;">Cerrar Sesión</button>
     </div>
   </div>
 
   <script>
-    // ================== TU CONFIGURACIÓN FIREBASE ==================
     const firebaseConfig = {
       apiKey: "AIzaSyA5mRsf1GX2E5vdlBBubUoaiH-aMBEE8KQ",
       authDomain: "the-rubik-s-theory.firebaseapp.com",
@@ -152,9 +154,7 @@
     function loadGames() {
       gamesRef.on('value', (snapshot) => {
         games = [];
-        snapshot.forEach(child => {
-          games.push({ id: child.key, ...child.val() });
-        });
+        snapshot.forEach(child => games.push({ id: child.key, ...child.val() }));
         renderGames();
       });
     }
@@ -165,25 +165,38 @@
       games.forEach(game => {
         const btn = document.createElement('button');
         btn.textContent = game.name;
-        btn.onclick = () => window.open(game.url, '_blank');
+        btn.onclick = () => openGame(game.url);
         grid.appendChild(btn);
       });
+    }
+
+    // Abrir en about:blank
+    function openGame(url) {
+      const win = window.open('about:blank', '_blank');
+      if (win) {
+        win.document.write(`
+          <!DOCTYPE html>
+          <html><head><title>Juego</title></head>
+          <body style="margin:0;padding:0;overflow:hidden;background:#000;">
+            <iframe src="${url}" style="width:100vw;height:100vh;border:none;" allowfullscreen></iframe>
+          </body></html>
+        `);
+        win.document.close();
+      }
     }
 
     function addGame() {
       const name = document.getElementById('gname').value.trim();
       const url = document.getElementById('gurl').value.trim();
-      if (!name || !url) return alert("Nombre y URL son obligatorios");
-
-      gamesRef.push({ name, url, timestamp: Date.now() });
-      document.getElementById('gname').value = '';
-      document.getElementById('gurl').value = '';
+      if (name && url) {
+        gamesRef.push({ name, url });
+        document.getElementById('gname').value = '';
+        document.getElementById('gurl').value = '';
+      }
     }
 
     function removeGame(id) {
-      if (confirm('¿Eliminar este juego?')) {
-        gamesRef.child(id).remove();
-      }
+      if (confirm('¿Eliminar este juego?')) gamesRef.child(id).remove();
     }
 
     function renderAdminList() {
@@ -198,17 +211,9 @@
     }
 
     function enterSecret() {
-      document.getElementById('theory').style.opacity = '0';
-      document.getElementById('theory-header').style.opacity = '0';
-
-      setTimeout(() => {
-        document.body.classList.add('secret-mode');
-        document.getElementById('secret').style.display = 'block';
-        setTimeout(() => {
-          document.getElementById('secret-content').classList.add('show');
-          loadGames();
-        }, 200);
-      }, 600);
+      document.getElementById('theory').style.display = 'none';
+      document.getElementById('secret').style.display = 'block';
+      loadGames();
     }
 
     const ADMIN_PASSWORD = "28815342";
@@ -226,7 +231,8 @@
     }
 
     function toggleSpotify() {
-      alert("Spotify embed - puedes añadirlo más adelante");
+      const embed = document.getElementById('spotify-embed');
+      embed.style.display = embed.style.display === 'none' ? 'block' : 'none';
     }
 
     // Lluvia Matrix
@@ -246,22 +252,20 @@
       const drops = Array(Math.floor(columns)).fill(1);
 
       function draw() {
-        ctx.fillStyle = 'rgba(0, 0, 0, 0.12)';
+        ctx.fillStyle = 'rgba(0,0,0,0.12)';
         ctx.fillRect(0, 0, canvas.width, canvas.height);
         ctx.fillStyle = '#ff5555';
         ctx.font = `${fontSize}px monospace`;
         for (let i = 0; i < drops.length; i++) {
-          ctx.fillText(chars[Math.floor(Math.random() * chars.length)], i * fontSize, drops[i] * fontSize);
-          if (drops[i] * fontSize > canvas.height && Math.random() > 0.96) drops[i] = 0;
+          ctx.fillText(chars[Math.floor(Math.random()*chars.length)], i*fontSize, drops[i]*fontSize);
+          if (drops[i]*fontSize > canvas.height && Math.random() > 0.96) drops[i] = 0;
           drops[i]++;
         }
       }
       setInterval(draw, 35);
     }
 
-    window.onload = () => {
-      createBinaryRain();
-    };
+    window.onload = () => createBinaryRain();
   </script>
 </body>
 </html>
