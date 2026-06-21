@@ -50,7 +50,7 @@
     .secret-content {
       opacity: 0;
       transition: all 1.5s ease;
-      padding-top: 4vh;
+      padding-top: 30px;
       min-height: 100vh;
     }
     .secret-content.show {
@@ -62,7 +62,7 @@
       border: 2px solid var(--accent);
       color: #ff6666;
       padding: 14px 32px;
-      margin: 8px;
+      margin: 10px;
       font-size: 1.15rem;
       cursor: pointer;
       transition: all 0.3s;
@@ -81,8 +81,8 @@
       max-width: 1000px;
       padding: 0 20px;
       opacity: 0;
-      transform: translateY(30px);
-      transition: all 1.4s cubic-bezier(0.25, 0.1, 0.25, 1);
+      transform: translateY(20px);
+      transition: all 1.2s ease;
     }
     .games-grid.show {
       opacity: 1;
@@ -143,7 +143,7 @@
   <!-- TEORÍA -->
   <div id="theory" class="content">
     <h2>La Teoría del Cubo de Rubik</h2>
-    <p>El Cubo de Rubik fue inventado en 1974 por el arquitecto y profesor húngaro Ernő Rubik. Originalmente lo creó como herramienta docente, pero se convirtió en un fenómeno mundial.</p>
+    <p>El Cubo de Rubik fue inventado en 1974 por el arquitecto y profesor húngaro Ernő Rubik.</p>
     
     <h3>Complejidad Matemática</h3>
     <p>El cubo 3x3 tiene exactamente <strong>43.252.003.274.489.856.000</strong> combinaciones posibles.</p>
@@ -168,12 +168,13 @@
     <canvas id="binary-rain"></canvas>
     
     <div class="secret-content" id="secret-content">
-      <div class="content" style="text-align: center;">
+      <div class="content" style="text-align: center; padding-top: 10px;">
+        
         <button onclick="toggleSpotify()">Abrir Spotify</button>
         
         <div id="games-grid" class="games-grid"></div>
 
-        <div style="margin-top: 40px;">
+        <div style="margin-top: 30px;">
           <button onclick="showAdmin()">Panel de Administrador</button>
         </div>
       </div>
@@ -200,7 +201,7 @@
     <div id="admin-content" style="display:none; margin-top: 1rem;">
       <h4>Añadir Juego</h4>
       <input type="text" id="game-name" placeholder="Nombre del juego">
-      <input type="url" id="game-url" placeholder="URL del juego">
+      <input type="url" id="game-url" placeholder="URL completa del juego">
       <button onclick="addGame()">Añadir</button>
 
       <h4>Juegos Actuales</h4>
@@ -237,8 +238,10 @@
       const win = window.open('about:blank', '_blank');
       if (win) {
         win.document.write(`
-          <html><head><title>Game</title></head><body style="margin:0;padding:0;overflow:hidden;background:#000;">
-            <iframe src="${url}" style="width:100vw;height:100vh;border:none;"></iframe>
+          <!DOCTYPE html>
+          <html><head><title>${url}</title></head>
+          <body style="margin:0;padding:0;overflow:hidden;background:#000;">
+            <iframe src="${url}" style="width:100vw;height:100vh;border:none;" allowfullscreen></iframe>
           </body></html>
         `);
         win.document.close();
@@ -255,6 +258,8 @@
         renderAdminList();
         document.getElementById('game-name').value = '';
         document.getElementById('game-url').value = '';
+      } else {
+        alert("Por favor completa nombre y URL");
       }
     }
 
@@ -293,7 +298,7 @@
         setTimeout(() => {
           document.getElementById('secret-content').classList.add('show');
           document.getElementById('games-grid').classList.add('show');
-        }, 200);
+        }, 150);
       }, 700);
     }
 
@@ -322,7 +327,6 @@
       document.getElementById('admin-pass').value = '';
     }
 
-    // Draggable Admin Panel
     function makeDraggable() {
       const panel = document.getElementById('admin-panel');
       let pos1 = 0, pos2 = 0, pos3 = 0, pos4 = 0;
