@@ -17,9 +17,10 @@
             --run-color: #ffffff;
             --success-color: #22c55e;
             --fail-color: #ef4444;
+            --ok-color: #eab308;
             /* Colores modo difícil */
-            --card-bg-hard: #1a0f0f;
-            --prep-hard-start: #3b0764;
+            --card-bg-hard: #14050a;
+            --prep-hard-start: #4a044e;
             --prep-hard-end: #831843;
             --run-hard-color: #fbcfe8;
         }
@@ -63,7 +64,31 @@
 
         body.mode-hard .game-card {
             background-color: var(--card-bg-hard);
-            border-color: rgba(219, 39, 119, 0.3);
+            border-color: rgba(219, 39, 119, 0.5);
+        }
+
+        /* Efecto Glitch para modo difícil */
+        body.mode-hard {
+            animation: glitchBg 8s infinite alternate;
+        }
+
+        @keyframes glitchBg {
+            0%, 95%, 100% { background-color: var(--bg-color); }
+            96% { background-color: #3b0764; }
+            97% { background-color: #ffffff; }
+            98% { background-color: #500724; }
+            99% { background-color: #000000; }
+        }
+
+        body.mode-hard .game-card {
+            animation: cardFloat 4s ease-in-out infinite alternate, glitchCard 12s infinite ease-in-out;
+        }
+
+        @keyframes glitchCard {
+            0%, 88%, 92%, 100% { transform: translateY(-8px) skew(0deg); }
+            89% { transform: translateY(-12px) skew(5deg) scale(0.99); border-color: red; }
+            90% { transform: translateY(-4px) skew(-5deg) scale(1.01); border-color: #db2777; }
+            91% { transform: translateY(-10px) skew(2deg); border-color: cyan; }
         }
 
         @keyframes cardFloat {
@@ -82,9 +107,14 @@
             font-weight: 900;
             color: var(--text-muted);
             letter-spacing: 0.5px;
+            transition: color 0.3s ease;
         }
 
-        /* Toggle de Modo Difícil (Esquina superior izquierda dentro de la tarjeta negra) */
+        body.mode-hard .round-display {
+            color: #fbcfe8;
+        }
+
+        /* Toggle de Modo Difícil */
         .hard-mode-toggle {
             display: flex;
             align-items: center;
@@ -148,6 +178,30 @@
             align-items: center;
             flex-grow: 1;
             gap: 0.5rem;
+            position: relative;
+        }
+
+        /* Glitch en los números en modo difícil */
+        body.mode-hard .timer-val, 
+        body.mode-hard .score-val {
+            position: relative;
+        }
+        
+        body.mode-hard.state-running .timer-val::before,
+        body.mode-hard.state-running .timer-val::after {
+            content: '-';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            color: rgba(255,0,0,0.5);
+            z-index: -1;
+            transform: translate(-2px, 1px);
+        }
+        body.mode-hard.state-running .timer-val::after {
+            color: rgba(0,255,255,0.5);
+            transform: translate(2px, -1px);
         }
 
         .timer-val {
@@ -173,7 +227,16 @@
             background: linear-gradient(45deg, var(--prep-hard-start), var(--prep-hard-end));
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
-            animation: pulseDegradado 1.5s ease-in-out infinite alternate, shakePrep 0.3s ease-in-out infinite alternate;
+            animation: pulseDegradado 1.5s ease-in-out infinite alternate, shakePrep 0.3s ease-in-out infinite alternate, glitchText 0.2s infinite;
+        }
+
+        @keyframes glitchText {
+            0% { transform: translate(0, 0); }
+            20% { transform: translate(-2px, 1px); }
+            40% { transform: translate(2px, -1px); }
+            60% { transform: translate(-1px, 2px); }
+            80% { transform: translate(1px, -2px); }
+            100% { transform: translate(0, 0); }
         }
 
         @keyframes pulseDegradado {
@@ -216,7 +279,7 @@
             letter-spacing: -2px;
         }
 
-        /* Resumen estilo dialed con animaciones elásticas */
+        /* Resumen estilo dialed */
         .summary-title {
             font-size: 5.5rem;
             font-weight: 900;
@@ -247,6 +310,11 @@
             flex-direction: column;
             gap: 1rem;
             animation: popIn 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        body.mode-hard .summary-box {
+            background: #20020d;
+            border-color: #831843;
         }
 
         .summary-header {
@@ -282,7 +350,6 @@
             opacity: 0;
         }
 
-        /* Cadena de apariciones elásticas (animación pantalla final) */
         .round-box:nth-child(1) { animation-delay: 0.1s; }
         .round-box:nth-child(2) { animation-delay: 0.2s; }
         .round-box:nth-child(3) { animation-delay: 0.3s; }
@@ -310,9 +377,9 @@
             z-index: 2;
         }
 
-        /* Colores dinámicos para las notas */
+        /* Colores notas */
         .round-box.grade-poor { background-color: #591919; } 
-        .round-box.grade-ok { background-color: #594419; } 
+        .round-box.grade-ok { background-color: #854d0e; } 
         .round-box.grade-good { background-color: #401959; } 
         .round-box.grade-great { background-color: #2b5919; } 
         .round-box.grade-perfect { background-color: #193659; } 
@@ -506,6 +573,8 @@
         let chargePitch = 150;
         let roundScores = [];
         let isHardMode = false;
+        let runningToneOsc = null;
+        let runningToneGain = null;
 
         const body = document.body;
         const gameCard = document.getElementById('gameCard');
@@ -521,7 +590,6 @@
         const cardBottomNav = document.getElementById('cardBottomNav');
         const hardModeToggle = document.getElementById('hardModeToggle');
 
-        // Interruptor Modo Difícil
         hardModeToggle.addEventListener('click', () => {
             if (currentState === GAME_STATES.IDLE || currentState === GAME_STATES.SUMMARY) {
                 isHardMode = !isHardMode;
@@ -535,9 +603,20 @@
         });
 
         function generateTarget() {
-            // Tiempos más variados: random puro de 1.00s a 10.00s
             targetTime = Math.floor(Math.random() * 901 + 100) / 100;
             targetVal.textContent = targetTime.toFixed(2);
+        }
+
+        function getCalculatedScore(elapsed, target) {
+            let diff = Math.abs(elapsed - target);
+            
+            // FÓRMULA DE NOTA
+            // Diferencia 2.0s aprox = 5.00
+            // Diferencia 0.0s = 10.00
+            // Se escala linealmente: si diff = 2, score = 5. Si diff = 0, score = 10.
+            // Fórmula: 10 - (diff * 2.5). Ej: 10 - (2 * 2.5) = 5.
+            let rawScore = 10 - (diff * 2.5);
+            return Math.max(0, rawScore);
         }
 
         function getGradeClass(score) {
@@ -602,9 +681,18 @@
         }
 
         nextBtn.addEventListener('click', () => {
+            // Regla 3: No pasar de ronda automáticamente. Requiere dar al botón.
             if (currentState === GAME_STATES.SUMMARY) {
                 nextRound();
-            } else if (currentState === GAME_STATES.STOPPED || currentState === GAME_STATES.IDLE) {
+            } else if (currentState === GAME_STATES.STOPPED) {
+                if (round < 5) {
+                    round++;
+                    nextRound();
+                } else {
+                    // Finalizan las 5 rondas -> Mostrar pantalla final al pulsar el botón
+                    showSummaryScreen();
+                }
+            } else if (currentState === GAME_STATES.IDLE) {
                 nextRound();
             }
         });
@@ -653,6 +741,19 @@
             
             playTone(600, 0.15, 'triangle');
 
+            // Regla 1: Sonido constante en modo difícil sin ticks
+            if (isHardMode) {
+                if (audioCtx.state === 'suspended') audioCtx.resume();
+                runningToneOsc = audioCtx.createOscillator();
+                runningToneGain = audioCtx.createGain();
+                runningToneOsc.type = 'sawtooth';
+                runningToneOsc.frequency.value = 330.0; // Tono constante en modo hard
+                runningToneGain.gain.setValueAtTime(0.08, audioCtx.currentTime);
+                runningToneOsc.connect(runningToneGain);
+                runningToneGain.connect(audioCtx.destination);
+                runningToneOsc.start();
+            }
+
             timerStart = performance.now();
             timerInterval = setInterval(() => {
                 let now = performance.now();
@@ -661,27 +762,33 @@
                 if (!isHardMode) {
                     window.currTimerVal.textContent = elapsedTime.toFixed(2);
                 } else {
-                    window.currTimerVal.textContent = "-"; // Oculto en modo difícil
+                    window.currTimerVal.textContent = "-";
                 }
 
-                if (Math.floor(elapsedTime) > Math.floor(elapsedTime - 0.01)) {
+                if (!isHardMode && Math.floor(elapsedTime) > Math.floor(elapsedTime - 0.01)) {
                     playTone(400, 0.05, 'sine');
-                    if (!isHardMode) {
-                        window.currTimerVal.classList.add('timer-tick-anim');
-                        setTimeout(() => window.currTimerVal.classList.remove('timer-tick-anim'), 150);
-                    }
+                    window.currTimerVal.classList.add('timer-tick-anim');
+                    setTimeout(() => window.currTimerVal.classList.remove('timer-tick-anim'), 150);
                 }
             }, 10);
         }
 
         function stopTimer() {
             clearInterval(timerInterval);
+            
+            // Detener sonido constante en modo difícil
+            if (isHardMode && runningToneOsc) {
+                try {
+                    runningToneOsc.stop();
+                    runningToneOsc.disconnect();
+                } catch(e){}
+                runningToneOsc = null;
+            }
+
             currentState = GAME_STATES.STOPPED;
             body.className = isHardMode ? 'mode-hard' : '';
 
-            let diff = Math.abs(elapsedTime - targetTime);
-            let rawScore = 10 - (diff * 10);
-            let finalScore = Math.max(0, rawScore);
+            let finalScore = getCalculatedScore(elapsedTime, targetTime);
 
             totalScore += finalScore;
             roundScores.push(finalScore);
@@ -692,58 +799,61 @@
             window.currScoreVal.classList.add('animate-pop');
             instructions.classList.add('fade-in');
 
-            if (finalScore >= 8.00) {
-                window.currScoreVal.style.color = 'var(--success-color)';
-                playTone(880, 0.3, 'sine');
-                instructions.textContent = "¡Increíble! Siguiente ronda...";
-            } else {
+            // Regla 2: Notas en rojo solo si la nota es menor a 5 (rojo oscuro: #591919), si es >=5 pero <8 amarillo, si >=8 verde
+            if (finalScore < 5.00) {
                 window.currScoreVal.style.color = 'var(--fail-color)';
                 playTone(220, 0.3, 'sawtooth');
                 gameCard.classList.add('animate-shake');
                 setTimeout(() => gameCard.classList.remove('animate-shake'), 400);
-                instructions.textContent = "Por poco... Siguiente ronda...";
+            } else if (finalScore < 8.00) {
+                window.currScoreVal.style.color = 'var(--ok-color)';
+                playTone(660, 0.3, 'sine'); 
+            } else {
+                window.currScoreVal.style.color = 'var(--success-color)';
+                playTone(880, 0.3, 'sine');
             }
 
-            setTimeout(() => {
-                if (round < 5) {
-                    round++;
-                    nextRound();
-                } else {
-                    currentState = GAME_STATES.SUMMARY;
-                    
-                    cardTopNav.style.display = "none";
-                    cardBottomNav.style.display = "flex"; 
+            if (round < 5) {
+                instructions.textContent = "¡Ronda parada! Pulsa el botón de la flecha para la siguiente ronda.";
+            } else {
+                instructions.textContent = "¡Partida completada! Pulsa el botón para ver el resumen final.";
+            }
+        }
 
-                    let roundsHtml = roundScores.map((score, idx) => {
-                        let gradeClass = getGradeClass(score);
-                        return `
-                            <div class="round-box ${gradeClass}">
-                                <span>${score.toFixed(2)}</span>
-                            </div>
-                        `;
-                    }).join('');
+        function showSummaryScreen() {
+            currentState = GAME_STATES.SUMMARY;
+            
+            cardTopNav.style.display = "none";
+            cardBottomNav.style.display = "flex"; 
 
-                    mainDisplayArea.innerHTML = `
-                        <div class="summary-title">${totalScore.toFixed(2)}<span style="font-size: 2.5rem; font-weight: 900; color: var(--text-muted);">/50</span></div>
-                        <div class="summary-subtitle">${getSummaryFlavorText(totalScore)}</div>
-                        <div class="summary-box">
-                            <div class="summary-header">
-                                <span>Partida</span>
-                                <span>${totalScore.toFixed(2)}/50</span>
-                            </div>
-                            <div class="rounds-grid">
-                                ${roundsHtml}
-                            </div>
-                        </div>
-                    `;
+            let roundsHtml = roundScores.map((score, idx) => {
+                let gradeClass = getGradeClass(score);
+                return `
+                    <div class="round-box ${gradeClass}">
+                        <span>${score.toFixed(2)}</span>
+                    </div>
+                `;
+            }).join('');
 
-                    instructions.textContent = "Partida finalizada. Pulsa el botón para volver a jugar.";
-                    nextBtn.innerHTML = '<svg viewBox="0 0 24 24" style="animation: spinPulse 6s linear infinite;"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z"/></svg>';
+            mainDisplayArea.innerHTML = `
+                <div class="summary-title">${totalScore.toFixed(2)}<span style="font-size: 2.5rem; font-weight: 900; color: var(--text-muted);">/50</span></div>
+                <div class="summary-subtitle">${getSummaryFlavorText(totalScore)}</div>
+                <div class="summary-box">
+                    <div class="summary-header">
+                        <span>Partida</span>
+                        <span>${totalScore.toFixed(2)}/50</span>
+                    </div>
+                    <div class="rounds-grid">
+                        ${roundsHtml}
+                    </div>
+                </div>
+            `;
 
-                    playTone(1000, 0.2, 'sine');
-                    setTimeout(() => playTone(1200, 0.3, 'sine'), 200);
-                }
-            }, 3000);
+            instructions.textContent = "Resumen final. Pulsa el botón de reinicio para volver a jugar.";
+            nextBtn.innerHTML = '<svg viewBox="0 0 24 24" style="animation: spinPulse 6s linear infinite;"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z"/></svg>';
+
+            playTone(1000, 0.2, 'sine');
+            setTimeout(() => playTone(1200, 0.3, 'sine'), 200);
         }
     </script>
 </body>
