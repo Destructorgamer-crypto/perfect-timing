@@ -160,7 +160,6 @@
         body.mode-color .toggle-switch { background: #4f46e5; }
         body.mode-color .toggle-switch::before { transform: translateX(18px); background: #c7d2fe; }
 
-        /* Para indicar visualmente qué switch está activo */
         body.mode-hard .hard-mode-toggle { color: #fbcfe8; }
         body.mode-color .color-mode-toggle { color: #c7d2fe; }
 
@@ -438,7 +437,6 @@
 
         .btn-reset:hover svg { transform: scale(1.1); }
 
-        /* Botón de reinicio (abajo izquierda) - SIEMPRE visible, excepto en el final */
         .restart-nav-container {
             display: flex;
             align-items: center;
@@ -494,7 +492,6 @@
             height: 18px;
         }
 
-        /* Contenedor flotante final de pantalla de resumen (Flecha hacia atrás - símbolo intacto) */
         .restart-summary-container {
             position: absolute;
             bottom: 38px;
@@ -612,7 +609,7 @@
             display: flex;
             flex-direction: column;
             width: 100%;
-            gap: 20px;
+            gap: 15px;
             align-items: center;
         }
 
@@ -621,11 +618,12 @@
             gap: 30px;
             width: 100%;
             justify-content: center;
+            height: 120px;
         }
 
         .color-preview-box {
-            width: 160px;
-            height: 160px;
+            width: 120px;
+            height: 120px;
             border-radius: 20px;
             border: 3px solid #ffffff;
             box-shadow: 0 10px 25px rgba(0,0,0,0.3);
@@ -634,6 +632,7 @@
             align-items: center;
             justify-content: flex-end;
             padding-bottom: 8px;
+            transition: opacity 0.5s ease;
         }
         
         .color-box-label {
@@ -649,7 +648,7 @@
         .sliders-col {
             display: flex;
             flex-direction: column;
-            gap: 16px;
+            gap: 12px;
             width: 100%;
             max-width: 400px;
         }
@@ -696,38 +695,14 @@
         #hueSlider { background: linear-gradient(to right, red, yellow, green, cyan, blue, magenta, red); }
         #satSlider { background: linear-gradient(to right, #808080, #ff0000); }
         #lightSlider { background: linear-gradient(to right, #000000, #808080, #ffffff); }
-        
-        .color-questions-box {
-            background: rgba(255,255,255,0.05);
-            border: 1px solid rgba(255,255,255,0.1);
-            border-radius: 16px;
-            padding: 1rem;
-            width: 100%;
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-            margin-top: 5px;
+
+        .memory-timer {
+            font-size: 2rem;
+            font-weight: 900;
+            color: #ef4444;
+            font-variant-numeric: tabular-nums;
+            height: 35px;
         }
-        
-        .q-title { font-size: 0.85rem; font-weight: 700; color: #cbd5e1; }
-        .q-options { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
-        
-        .q-btn {
-            background: #334155;
-            color: #f1f5f9;
-            border: none;
-            border-radius: 8px;
-            padding: 8px;
-            font-size: 0.8rem;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.2s;
-            text-align: center;
-        }
-        
-        .q-btn:hover { background: #475569; transform: translateY(-1px); }
-        .q-btn.correct { background: #166534; color: #bbf7d0; }
-        .q-btn.incorrect { background: #991b1b; color: #fee2e2; }
     </style>
 </head>
 <body>
@@ -851,7 +826,8 @@
         let runningToneGain = null;
 
         let targetH = 0, targetS = 0, targetL = 0;
-        let currentQ = null;
+        let memoryTimerCount = 5;
+        let memoryTimerInterval = null;
 
         const body = document.body;
         const gameCard = document.getElementById('gameCard');
@@ -917,42 +893,10 @@
         }
 
         function getSummaryFlavorText(score) {
-            if (score >= 45) return "¡Impecable! Tienes una precisión asombrosa.";
-            if (score >= 35) return "Excelente nivel. Tienes un control nato.";
-            if (score >= 25) return "Buen resultado, pero aún puedes afinar más.";
-            return "Sigue practicando, no es tan fácil dominarlo.";
-        }
-
-        const colorQuestions = [
-            {
-                text: "¿Qué color se obtiene al mezclar amarillo y azul?",
-                options: ["Naranja", "Verde", "Violeta", "Marrón"],
-                correct: 1
-            },
-            {
-                text: "En el modelo HSL, ¿qué propiedad define la pureza o intensidad del color?",
-                options: ["Tono (Hue)", "Saturación", "Luminosidad", "Contraste"],
-                correct: 1
-            },
-            {
-                text: "¿Cuál de los siguientes es considerado un color primario sustractivo?",
-                options: ["Rojo", "Verde", "Cian", "Amarillo"],
-                correct: 2
-            },
-            {
-                text: "Al máximo de Luminosidad (Lightness) en HSL, ¿qué color se obtiene siempre?",
-                options: ["Negro", "Blanco", "Gris", "El color complementario"],
-                correct: 1
-            },
-            {
-                text: "¿Qué colores se consideran 'complementarios' en la rueda de color?",
-                options: ["Adyacentes", "Opuestos", "Primarios", "Fríos"],
-                correct: 1
-            }
-        ];
-
-        function getRandomQuestion() {
-            return colorQuestions[Math.floor(Math.random() * colorQuestions.length)];
+            if (score >= 45) return "¡Impecable! Tienes una memoria y precisión asombrosas.";
+            if (score >= 35) return "Excelente nivel. Tienes un gran control visual.";
+            if (score >= 25) return "Buen resultado, pero aún puedes afinar más tu memoria de color.";
+            return "Sigue practicando, no es tan fácil clocar los tonos de memoria.";
         }
 
         function resetGameDisplay() {
@@ -972,11 +916,8 @@
                 <div class="score-val" id="scoreVal"></div>
             `;
             
-            // Barra y botón de reiniciar normales (abajo izquierda)
             cardBottomNav.style.display = "flex";
             restartNavBtn.style.display = "flex";
-            
-            // Ocultar botón de resumen
             restartSummaryContainer.style.display = "none";
             
             nextBtn.innerHTML = '<svg viewBox="0 0 24 24"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>';
@@ -998,11 +939,12 @@
             
             mainDisplayArea.innerHTML = `
                 <div class="color-game-area">
+                    <div class="memory-timer" id="memoryTimerDisplay">Memoriza: 5s</div>
                     <div class="color-boxes-row">
                         <div class="color-preview-box" id="targetColorBox" style="background-color: hsl(${targetH}, ${targetS}%, ${targetL}%);">
                             <span class="color-box-label">OBJETIVO</span>
                         </div>
-                        <div class="color-preview-box" id="userColorBox" style="background-color: hsl(0, 50%, 50%);">
+                        <div class="color-preview-box" id="userColorBox" style="background-color: hsl(0, 50%, 50%); opacity: 0.3;">
                             <span class="color-box-label">TU COPIA</span>
                         </div>
                     </div>
@@ -1010,54 +952,56 @@
                     <div class="sliders-col">
                         <div class="slider-group">
                             <div class="slider-label"><span>Tono (Hue)</span><span id="valH">0°</span></div>
-                            <input type="range" id="hueSlider" class="color-slider" min="0" max="360" value="0">
+                            <input type="range" id="hueSlider" class="color-slider" min="0" max="360" value="0" disabled>
                         </div>
                         <div class="slider-group">
                             <div class="slider-label"><span>Saturación</span><span id="valS">50%</span></div>
-                            <input type="range" id="satSlider" class="color-slider" min="0" max="100" value="50">
+                            <input type="range" id="satSlider" class="color-slider" min="0" max="100" value="50" disabled>
                         </div>
                         <div class="slider-group">
                             <div class="slider-label"><span>Intensidad (Luminosidad)</span><span id="valL">50%</span></div>
-                            <input type="range" id="lightSlider" class="color-slider" min="0" max="100" value="50">
+                            <input type="range" id="lightSlider" class="color-slider" min="0" max="100" value="50" disabled>
                         </div>
-                    </div>
-                    
-                    <div class="color-questions-box" id="qBox">
-                        <div class="q-title" id="qText">Cargando pregunta...</div>
-                        <div class="q-options" id="qOptions"></div>
                     </div>
                 </div>
             `;
             
-            instructions.textContent = "Iguala el color con las barras y responde a la pregunta. ¡Dale a siguiente!";
+            instructions.textContent = "Memoriza el recuadro de arriba. ¡Se ocultará en 5 segundos!";
             
+            memoryTimerCount = 5;
+            const memDisplay = document.getElementById('memoryTimerDisplay');
+            const targetBox = document.getElementById('targetColorBox');
+            const userBox = document.getElementById('userColorBox');
+
             const hS = document.getElementById('hueSlider');
             const sS = document.getElementById('satSlider');
             const lS = document.getElementById('lightSlider');
-            const userBox = document.getElementById('userColorBox');
-            
-            currentQ = getRandomQuestion();
-            document.getElementById('qText').textContent = currentQ.text;
-            const optHtml = currentQ.options.map((opt, idx) => `<button class="q-btn" onclick="checkAnswer(${idx})">${opt}</button>`).join('');
-            document.getElementById('qOptions').innerHTML = optHtml;
 
-            let answered = false;
-            window.checkAnswer = (idx) => {
-                if (answered) return;
-                answered = true;
-                const btns = document.querySelectorAll('.q-btn');
-                btns.forEach(b => b.style.pointerEvents = 'none');
-                
-                if (idx === currentQ.correct) {
-                    btns[idx].classList.add('correct');
-                    totalScore += 1.5;
-                } else {
-                    btns[idx].classList.add('incorrect');
-                    btns[currentQ.correct].classList.add('correct');
+            memoryTimerInterval = setInterval(() => {
+                memoryTimerCount--;
+                memDisplay.textContent = `Memoriza: ${memoryTimerCount}s`;
+
+                if (memoryTimerCount <= 0) {
+                    clearInterval(memoryTimerInterval);
+                    
+                    // Ocultar color objetivo y habilitar controles de memoria
+                    targetBox.style.backgroundColor = '#222';
+                    targetBox.innerHTML = '<span class="color-box-label">OCULTO</span>';
+                    userBox.style.opacity = '1';
+
+                    hS.disabled = false;
+                    sS.disabled = false;
+                    lS.disabled = false;
+
+                    instructions.textContent = "¡Tiempo agotado! Recrea el color que memorizaste de memoria y pulsa Siguiente.";
+                    memDisplay.textContent = "¡Cópialo ahora!";
+                    memDisplay.style.color = '#eab308';
+                    playTone(440, 0.2, 'sine');
                 }
-            };
+            }, 1000);
 
             function updateColor() {
+                if(memoryTimerCount > 0) return;
                 const h = hS.value;
                 const s = sS.value;
                 const l = lS.value;
@@ -1075,6 +1019,9 @@
         }
 
         function stopColorGameRound() {
+            // Si el usuario intenta validar durante los 5s de memoria, no hacer nada
+            if(memoryTimerCount > 0) return;
+
             const hS = document.getElementById('hueSlider').value;
             const sS = document.getElementById('satSlider').value;
             const lS = document.getElementById('lightSlider').value;
@@ -1084,27 +1031,36 @@
             const diffS = Math.abs(sS - targetS);
             const diffL = Math.abs(lS - targetL);
             
-            let visualScore = Math.max(0, 8.5 - ((diffH / 36) + (diffS / 15) + (diffL / 15)));
-            let roundPts = visualScore;
-            
-            const selectedBtn = document.querySelector('.q-btn.correct');
-            if (selectedBtn) {
-                roundPts += 1.5;
-            }
+            // Puntuación sobre 10 basada en la precisión
+            let roundPts = Math.max(0, 10 - ((diffH / 36) + (diffS / 15) + (diffL / 15)));
 
             totalScore += roundPts;
             roundScores.push(roundPts);
             
             currentState = GAME_STATES.STOPPED;
+
+            // Mostrar el color real objetivo junto a la copia para comparación en la pantalla de resultados de ronda
+            const targetColorRgb = `hsl(${targetH}, ${targetS}%, ${targetL}%)`;
+            const userColorRgb = `hsl(${hS}, ${sS}%, ${lS}%)`;
             
             mainDisplayArea.innerHTML = `
-                <div class="timer-val" style="font-size: 5rem; margin-top:1.5rem;">Ronda ${round}</div>
-                <div class="score-label" style="font-size: 1.2rem; color: var(--text-muted); text-transform:uppercase; margin-top:20px;">Puntos obtenidos</div>
-                <div class="score-val animate-pop" style="font-size: 5.5rem; color: var(--success-color);">${roundPts.toFixed(2)} / 10.00</div>
+                <div class="timer-val" style="font-size: 3.5rem; margin-top:0.5rem;">Ronda ${round} Finalizada</div>
+                <div style="display:flex; gap:20px; margin: 15px 0;">
+                    <div style="text-align:center;">
+                        <div style="width:70px; height:70px; background:${targetColorRgb}; border-radius:12px; border:2px solid #fff;"></div>
+                        <span style="font-size:0.7rem; font-weight:700; color:var(--text-muted)">OBJETIVO</span>
+                    </div>
+                    <div style="text-align:center;">
+                        <div style="width:70px; height:70px; background:${userColorRgb}; border-radius:12px; border:2px solid #fff;"></div>
+                        <span style="font-size:0.7rem; font-weight:700; color:var(--text-muted)">TU COPIA</span>
+                    </div>
+                </div>
+                <div class="score-label" style="font-size: 1rem; color: var(--text-muted); text-transform:uppercase;">Puntos de memoria</div>
+                <div class="score-val animate-pop" style="font-size: 4.5rem; color: var(--success-color);">${roundPts.toFixed(2)} / 10.00</div>
             `;
             
             if (round < 5) {
-                instructions.textContent = "Siguiente ronda de color preparada. Pulsa siguiente.";
+                instructions.textContent = "Siguiente ronda de memoria preparada. Pulsa siguiente.";
             } else {
                 instructions.textContent = "Partida completada. Pulsa el botón para ver el resumen final.";
             }
@@ -1169,6 +1125,10 @@
             round = 1;
             totalScore = 0;
             roundScores = [];
+            
+            // Limpiar intervalos en caso de estar en el contador de memoria
+            if (memoryTimerInterval) clearInterval(memoryTimerInterval);
+            
             nextRound();
         }
 
@@ -1268,10 +1228,9 @@
             
             if (isHardMode && runningToneOsc) {
                 try {
-                    runningToneOsc.stop();
-                    runningToneOsc.disconnect();
+                    runningOsc.stop();
+                    runningOsc.disconnect();
                 } catch(e){}
-                runningToneOsc = null;
             }
 
             currentState = GAME_STATES.STOPPED;
@@ -1312,10 +1271,8 @@
             currentState = GAME_STATES.SUMMARY;
             
             if (cardTopNav) cardTopNav.style.display = "none";
-            // Ocultar barra inferior completa al finalizar (incluyendo el botón de reinicio normal)
             if (cardBottomNav) cardBottomNav.style.display = "none"; 
 
-            // Mostrar el botón de reinicio/atrás flotante abajo a la derecha
             restartSummaryContainer.style.display = "flex";
 
             let roundsHtml = roundScores.map((score, idx) => {
@@ -1330,7 +1287,7 @@
                 `;
             }).join('');
 
-            const maxTotalPts = isColorMode ? "50" : "50.00";
+            const maxTotalPts = isColorMode ? "50.00" : "50.00";
 
             mainDisplayArea.innerHTML = `
                 <div class="summary-title">${totalScore.toFixed(2)}<span style="font-size: 2.5rem; font-weight: 900; color: var(--text-muted);">/${maxTotalPts}</span></div>
