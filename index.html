@@ -3,26 +3,26 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sincronización Táctica</title>
+    <title>Dialed Time</title>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Geist:wght@300;400;700&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;700&display=swap');
 
         :root {
-            --bg-color: #0f0f11;
-            --card-bg: #18181b;
-            --text-main: #f4f4f5;
-            --text-muted: #a1a1aa;
-            --accent-prep: #27272a;
-            --accent-active: #3b82f6;
-            --accent-success: #10b981;
-            --accent-danger: #ef4444;
+            --bg-color: #201321; /* Tono oscuro minimalista tipo dialed.gg */
+            --card-bg: #321f33;
+            --text-main: #ffffff;
+            --text-muted: #a88ca9;
+            --prep-color: #fca5a5;
+            --run-color: #93c5fd;
+            --success-color: #86efac;
+            --fail-color: #fca5a5;
         }
 
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            font-family: 'Geist', sans-serif;
+            font-family: 'Inter', sans-serif;
             user-select: none;
         }
 
@@ -35,185 +35,269 @@
             align-items: center;
             justify-content: center;
             overflow: hidden;
+            transition: background-color 0.3s ease;
         }
 
-        .game-container {
-            background: var(--card-bg);
-            padding: 3rem 4rem;
-            border-radius: 16px;
-            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+        /* Ocupa toda la pantalla, tarjeta elegante estilo web app */
+        .game-card {
+            background-color: var(--card-bg);
+            width: 100%;
+            max-width: 650px;
+            height: 580px;
+            border-radius: 32px;
             display: flex;
             flex-direction: column;
-            align-items: center;
-            gap: 2rem;
-            border: 1px solid rgba(255, 255, 255, 0.05);
-            width: 90%;
-            max-width: 550px;
+            justify-content: space-between;
+            padding: 2.5rem 3rem;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+            position: relative;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), background-color 0.3s ease;
         }
 
-        /* Header con racha y objetivo */
-        .stats-header {
+        .card-top {
             display: flex;
             justify-content: space-between;
-            width: 100%;
-            font-size: 1.1rem;
-            color: var(--text-muted);
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-            padding-bottom: 1rem;
+            align-items: center;
         }
 
-        .streak-counter span, .record-counter span {
+        .streak-display {
+            font-size: 0.95rem;
+            font-weight: 700;
+            color: var(--text-muted);
+            letter-spacing: 0.5px;
+        }
+
+        .target-display {
+            font-size: 1.5rem;
+            font-weight: 700;
             color: var(--text-main);
-            font-weight: 700;
         }
 
-        /* Pantallas de objetivo y cronómetro */
-        .target-section {
-            text-align: center;
+        .main-display {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            flex-grow: 1;
+            gap: 0.5rem;
         }
 
-        .target-label {
-            font-size: 0.9rem;
-            text-transform: uppercase;
-            letter-spacing: 2px;
-            color: var(--text-muted);
-            margin-bottom: 0.5rem;
-        }
-
-        .target-time {
-            font-size: 3.5rem;
-            font-weight: 700;
-            letter-spacing: -1px;
-        }
-
-        .timer-display {
-            font-size: 5rem;
+        .timer-val {
+            font-size: 8.5rem;
             font-weight: 300;
             font-variant-numeric: tabular-nums;
-            letter-spacing: -2px;
+            letter-spacing: -4px;
+            color: var(--text-main);
+            transition: color 0.15s ease;
+        }
+
+        /* Cambios de estado en el temporizador */
+        body.state-preparing .timer-val {
+            color: var(--prep-color);
+        }
+
+        body.state-running .timer-val {
+            color: var(--run-color);
+        }
+
+        .score-label {
+            font-size: 1.1rem;
+            font-weight: 400;
+            color: var(--text-muted);
+            text-align: center;
+            min-height: 20px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .score-val {
+            font-size: 3.5rem;
+            font-weight: 700;
+            text-align: center;
+            min-height: 65px;
+            color: var(--text-main);
             transition: color 0.2s ease;
         }
 
-        /* Estados visuales de la barra espaciadora / preparación */
-        body.is-preparing .timer-display {
-            color: #fbbf24; /* Tono cálido tipo CSTimer al mantener sostenido */
+        .card-bottom {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
         }
 
-        body.is-running .timer-display {
-            color: var(--accent-active);
-        }
-
-        /* Indicador de puntuación / resultado */
-        .result-box {
-            min-height: 40px;
-            text-align: center;
-        }
-
-        .score-display {
-            font-size: 1.5rem;
-            font-weight: 700;
-        }
-
-        .diff-display {
-            font-size: 1rem;
-            color: var(--text-muted);
-            margin-top: 0.2rem;
-        }
-
-        /* Instrucciones */
         .instructions {
-            font-size: 0.95rem;
+            font-size: 0.9rem;
             color: var(--text-muted);
-            text-align: center;
-            line-height: 1.5;
-            background: rgba(24, 24, 27, 0.8);
-            padding: 1rem 1.5rem;
-            border-radius: 8px;
-            border-left: 3px solid var(--text-muted);
+            max-width: 380px;
+            line-height: 1.4;
         }
 
-        /* Animaciones */
-        @keyframes popIn {
-            0% { transform: scale(0.95); opacity: 0; }
-            100% { transform: scale(1); opacity: 1; }
+        .btn-next {
+            width: 56px;
+            height: 56px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: background 0.2s, transform 0.2s;
+            border: none;
+            outline: none;
+        }
+
+        .btn-next:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: scale(1.05);
+        }
+
+        .btn-next svg {
+            fill: var(--text-main);
+            width: 24px;
+            height: 24px;
+        }
+
+        /* Animaciones para la tarjeta */
+        .animate-pulse-subtle {
+            animation: pulseSubtle 0.6s infinite alternate;
+        }
+
+        @keyframes pulseSubtle {
+            0% { transform: scale(1); }
+            100% { transform: scale(1.015); }
         }
 
         .animate-pop {
-            animation: popIn 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+            animation: popIn 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        @keyframes popIn {
+            0% { opacity: 0; transform: scale(0.9); }
+            100% { opacity: 1; transform: scale(1); }
         }
     </style>
 </head>
 <body>
 
-    <div class="game-container">
-        <div class="stats-header">
-            <div class="streak-counter">Racha: <span id="streak">0</span></div>
-            <div class="record-counter">Mejor Racha: <span id="bestStreak">0</span></div>
+    <div class="game-card" id="gameCard">
+        <div class="card-top">
+            <div class="streak-display">Racha: <span id="streakVal">0</span></div>
+            <div class="target-display">Objetivo: <span id="targetVal">0.00</span>s</div>
         </div>
 
-        <div class="target-section">
-            <div class="target-label">Tiempo Objetivo</div>
-            <div class="target-time"><span id="targetTime">0.00</span>s</div>
+        <div class="main-display">
+            <div class="timer-val" id="timerVal">0.00</div>
+            <div class="score-label" id="scoreLabel"></div>
+            <div class="score-val" id="scoreVal"></div>
         </div>
 
-        <div class="timer-display" id="timer">0.00</div>
-
-        <div class="result-box" id="resultBox">
-            <div class="score-display" id="scoreDisplay"></div>
-            <div class="diff-display" id="diffDisplay"></div>
-        </div>
-
-        <div class="instructions" id="instructions">
-            Mantén la <strong>BARRA ESPACIADORA</strong> presionada para preparar. Suéltala para empezar a correr el tiempo. Presiónala de nuevo (o vuelve a soltar, según la fase) para detenerlo y clavar el objetivo.
+        <div class="card-bottom">
+            <div class="instructions" id="instructions">
+                Mantén espacio para cargar. Suelta para iniciar el conteo, pulsa otra vez para parar.
+            </div>
+            <button class="btn-next" id="nextBtn" aria-label="Siguiente">
+                <svg viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+            </button>
         </div>
     </div>
 
     <script>
-        const STATES = {
-            IDLE: 'idle',         // Esperando a que mantengan espacio
-            PREPARING: 'preparing', // Espacio mantenido, listo para soltar
-            RUNNING: 'running',   // Tiempo corriendo
-            STOPPED: 'stopped'    // Cronómetro detenido
-        };
+        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
 
-        let currentState = STATES.IDLE;
-        let targetTime = 0.00;
-        let startTime = 0;
-        let elapsedTime = 0;
-        let timerInterval = null;
-        
-        let streak = 0;
-        let bestStreak = 0;
+        function playTone(freq, duration, type = 'sine', ramp = true) {
+            if (audioCtx.state === 'suspended') {
+                audioCtx.resume();
+            }
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+            
+            osc.type = type;
+            osc.frequency.value = freq;
+            
+            gain.gain.setValueAtTime(0.15, audioCtx.currentTime);
+            if(ramp) {
+                gain.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + duration);
+            } else {
+                gain.gain.setValueAtTime(0.15, audioCtx.currentTime + duration - 0.05);
+                gain.gain.linearRampToValueAtTime(0.0001, audioCtx.currentTime + duration);
+            }
 
-        // Elementos DOM
-        const body = document.body;
-        const timerEl = document.getElementById('timer');
-        const targetTimeEl = document.getElementById('targetTime');
-        const streakEl = document.getElementById('streak');
-        const bestStreakEl = document.getElementById('bestStreak');
-        const scoreDisplay = document.getElementById('scoreDisplay');
-        const diffDisplay = document.getElementById('diffDisplay');
-        const instructionsEl = document.getElementById('instructions');
-
-        // Generar un objetivo aleatorio entre 1.00 y 10.00 segundos (con 2 decimales)
-        function generateTarget() {
-            targetTime = Math.floor(Math.random() * 901 + 100) / 100; // de 1.00 a 10.00
-            targetTimeEl.textContent = targetTime.toFixed(2);
+            osc.connect(gain);
+            gain.connect(audioCtx.destination);
+            
+            osc.start();
+            osc.stop(audioCtx.currentTime + duration);
         }
 
+        const GAME_STATES = {
+            IDLE: 0,
+            PREPARING: 1,
+            RUNNING: 2,
+            STOPPED: 3
+        };
+
+        let currentState = GAME_STATES.IDLE;
+        let targetTime = 0.00;
+        let timerStart = 0;
+        let timerInterval = null;
+        let elapsedTime = 0;
+        let streak = 0;
+        let chargeInterval = null;
+        let chargePitch = 150;
+
+        const body = document.body;
+        const gameCard = document.getElementById('gameCard');
+        const targetVal = document.getElementById('targetVal');
+        const streakVal = document.getElementById('streakVal');
+        const timerVal = document.getElementById('timerVal');
+        const scoreLabel = document.getElementById('scoreLabel');
+        const scoreVal = document.getElementById('scoreVal');
+        const instructions = document.getElementById('instructions');
+        const nextBtn = document.getElementById('nextBtn');
+
+        function generateTarget() {
+            // Entre 1.00s y 10.00s con dos decimales
+            targetTime = Math.floor(Math.random() * 901 + 100) / 100;
+            targetVal.textContent = targetTime.toFixed(2);
+        }
+
+        function resetGameDisplay() {
+            timerVal.textContent = "0.00";
+            scoreLabel.textContent = "";
+            scoreVal.textContent = "";
+            body.className = '';
+        }
+
+        function nextRound() {
+            resetGameDisplay();
+            generateTarget();
+            currentState = GAME_STATES.IDLE;
+            instructions.textContent = "Mantén espacio para cargar. Suelta para iniciar.";
+        }
+
+        nextBtn.addEventListener('click', nextRound);
+
+        // Inicializar
         generateTarget();
 
-        // Manejador de teclado
         window.addEventListener('keydown', (e) => {
             if (e.code === 'Space') {
-                e.preventDefault(); // Evita que la página haga scroll al pulsar espacio
+                e.preventDefault();
 
-                if (currentState === STATES.IDLE) {
-                    currentState = STATES.PREPARING;
-                    body.classList.add('is-preparing');
-                    instructionsEl.innerHTML = "Sueltala <strong>BARRA ESPACIADORA</strong> para iniciar el conteo...";
-                } 
-                else if (currentState === STATES.RUNNING) {
+                if (currentState === GAME_STATES.IDLE) {
+                    currentState = GAME_STATES.PREPARING;
+                    body.className = 'state-preparing';
+                    instructions.textContent = "Cargando... Suelta para empezar.";
+                    
+                    // Sonido progresivo de Carga (Hum / Baja frecuencia)
+                    chargePitch = 150;
+                    chargeInterval = setInterval(() => {
+                        if(chargePitch < 300) chargePitch += 10;
+                        playTone(chargePitch, 0.1, 'sine', false);
+                    }, 100);
+                }
+                else if (currentState === GAME_STATES.RUNNING) {
                     stopTimer();
                 }
             }
@@ -221,72 +305,64 @@
 
         window.addEventListener('keyup', (e) => {
             if (e.code === 'Space') {
-                if (currentState === STATES.PREPARING) {
+                if (currentState === GAME_STATES.PREPARING) {
+                    clearInterval(chargeInterval);
                     startTimer();
-                } 
-                // Si estaba corriendo, el requisito de parar puede ser volver a pulsar o soltar según prefieras, 
-                // pero como pusimos que se detiene al volver a pulsar (keydown), dejamos el keyup libre o para otro propósito.
+                }
             }
         });
 
         function startTimer() {
-            currentState = STATES.RUNNING;
-            body.classList.remove('is-preparing');
-            body.classList.add('is-running');
+            currentState = GAME_STATES.RUNNING;
+            body.className = 'state-running';
+            instructions.textContent = "Pulsa espacio otra vez para parar.";
             
-            // Reiniciar visuales anteriores
-            scoreDisplay.textContent = '';
-            diffDisplay.textContent = '';
-            
-            startTime = performance.now();
-            
+            // Sonido de inicio de carrera
+            playTone(600, 0.15, 'triangle');
+
+            timerStart = performance.now();
             timerInterval = setInterval(() => {
                 let now = performance.now();
-                elapsedTime = (now - startTime) / 1000;
-                timerEl.textContent = elapsedTime.toFixed(2);
-            }, 10); // Actualización fluida cada 10ms
-            
-            instructionsEl.innerHTML = "Pulsa otra vez para <strong>DETENER</strong> el tiempo...";
+                elapsedTime = (now - timerStart) / 1000;
+                timerVal.textContent = elapsedTime.toFixed(2);
+
+                // Pequeño tick cada segundo para dar feedback sonoro táctil
+                if (Math.floor(elapsedTime) > Math.floor(elapsedTime - 0.01)) {
+                    playTone(400, 0.05, 'sine');
+                }
+            }, 10);
         }
 
         function stopTimer() {
             clearInterval(timerInterval);
-            currentState = STATES.STOPPED;
-            body.classList.remove('is-running');
-            
-            // Cálculo de puntuación sobre 10
-            let difference = Math.abs(elapsedTime - targetTime);
-            
-            // Puntuación: si la diferencia es 0 -> 10. Si la diferencia es >= 1.00s -> 0.
-            let rawScore = 10 - (difference * 10);
-            let finalScore = Math.max(0, rawScore); 
-            
-            // Mostrar resultado visual
-            scoreDisplay.textContent = `Nota: ${finalScore.toFixed(2)} / 10`;
-            diffDisplay.textContent = `Diferencia: ${difference >= 0 ? '+' : ''}${(elapsedTime - targetTime).toFixed(2)}s`;
-            
-            // Sistema de racha estricto: consideremos éxito si sacas un 8.00 o más (tolerancia de 0.20s respecto al objetivo)
-            if (finalScore >= 8.00) {
+            currentState = GAME_STATES.STOPPED;
+            body.className = '';
+
+            let diff = Math.abs(elapsedTime - targetTime);
+            // Puntuación sobre 10 (fórmula: 10 - (diferencia * 10), min 0)
+            let rawScore = 10 - (diff * 10);
+            let finalScore = Math.max(0, rawScore).toFixed(2);
+
+            timerVal.textContent = elapsedTime.toFixed(2);
+            scoreLabel.textContent = "Tu Nota";
+            scoreVal.textContent = finalScore + " / 10";
+            scoreVal.classList.add('animate-pop');
+
+            // Umbral de éxito (Nota >= 8.00) considerado para mantener Racha
+            if (parseFloat(finalScore) >= 8.00) {
                 streak++;
-                streakEl.textContent = streak;
-                if (streak > bestStreak) {
-                    bestStreak = streak;
-                    bestStreakEl.textContent = bestStreak;
-                }
-                scoreDisplay.style.color = 'var(--accent-success)';
+                scoreVal.style.color = 'var(--success-color)';
+                playTone(880, 0.3, 'sine'); // Sonido agudo de acierto
+                gameCard.classList.add('animate-pulse-subtle');
+                setTimeout(() => gameCard.classList.remove('animate-pulse-subtle'), 600);
             } else {
                 streak = 0;
-                streakEl.textContent = streak;
-                scoreDisplay.style.color = 'var(--accent-danger)';
+                scoreVal.style.color = 'var(--fail-color)';
+                playTone(220, 0.3, 'sawtooth'); // Sonido grave fallo
             }
             
-            // Preparar siguiente ronda tras un breve instante
-            setTimeout(() => {
-                generateTarget();
-                timerEl.textContent = "0.00";
-                currentState = STATES.IDLE;
-                instructionsEl.innerHTML = "Mantén la <strong>BARRA ESPACIADORA</strong> presionada para preparar la siguiente ronda.";
-            }, 2500); // 2.5 segundos para leer tu nota y pasar al siguiente
+            streakVal.textContent = streak;
+            instructions.textContent = "Pulsa el botón de la flecha o recarga para la siguiente ronda.";
         }
     </script>
 </body>
