@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dialed Time</title>
+    <title>Dialed Time.embed</title>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;900&display=swap');
 
@@ -19,9 +19,9 @@
             --fail-color: #ef4444;
             --ok-color: #eab308;
             /* Colores modo difícil */
-            --card-bg-hard: #14050a;
-            --prep-hard-start: #4a044e;
-            --prep-hard-end: #831843;
+            --card-bg-hard: #0f0208;
+            --prep-hard-start: #580242;
+            --prep-hard-end: #9d174d;
             --run-hard-color: #fbcfe8;
         }
 
@@ -42,7 +42,12 @@
             align-items: center;
             justify-content: center;
             overflow: hidden;
-            transition: background-color 0.5s ease;
+            transition: background-color 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        /* Regla: Fondo del body negro en Modo Difícil */
+        body.mode-hard {
+            background-color: #000000;
         }
 
         .game-card {
@@ -64,7 +69,8 @@
 
         body.mode-hard .game-card {
             background-color: var(--card-bg-hard);
-            border-color: rgba(219, 39, 119, 0.5);
+            border-color: rgba(219, 39, 119, 0.6);
+            box-shadow: 0 30px 80px -12px rgba(219, 39, 119, 0.3);
         }
 
         @keyframes cardFloat {
@@ -72,16 +78,16 @@
             100% { transform: translateY(-8px); }
         }
 
-        /* Efecto Glitch más frecuente que solo afecta al cuadrado central/game-card */
+        /* Glitch central frecuente e intenso */
         body.mode-hard .game-card {
-            animation: cardFloat 4s ease-in-out infinite alternate, glitchCardCenter 1.8s infinite ease-in-out;
+            animation: cardFloat 4s ease-in-out infinite alternate, glitchCardCenter 2.2s infinite ease-in-out;
         }
 
         @keyframes glitchCardCenter {
-            0%, 40%, 44%, 100% { transform: translateY(-8px) skew(0deg); border-color: rgba(219, 39, 119, 0.5); box-shadow: 0 30px 60px -12px rgba(0, 0, 0, 0.5); }
-            41% { transform: translateY(-10px) skew(4deg) scale(0.995); border-color: #ff0055; box-shadow: 0 0 40px rgba(255,0,85,0.4); }
-            42% { transform: translateY(-6px) skew(-4deg) scale(1.005); border-color: #00ffff; box-shadow: 0 0 40px rgba(0,255,255,0.4); }
-            43% { transform: translateY(-9px) skew(1deg); border-color: #ffffff; }
+            0%, 35%, 39%, 100% { transform: translateY(-8px) skew(0deg); border-color: rgba(219, 39, 119, 0.6); box-shadow: 0 30px 80px -12px rgba(219, 39, 119, 0.3); }
+            36% { transform: translateY(-13px) skew(6deg) scale(0.99); border-color: #ff0055; box-shadow: 0 0 50px rgba(255,0,85,0.5); }
+            37% { transform: translateY(-5px) skew(-6deg) scale(1.01); border-color: #00ffff; box-shadow: 0 0 50px rgba(0,255,255,0.5); }
+            38% { transform: translateY(-10px) skew(2deg); border-color: #9d174d; }
         }
 
         .card-top {
@@ -169,21 +175,21 @@
             position: relative;
         }
 
-        /* Glitch en los números en modo difícil más frecuente (cada 2.5s un parpadeo) */
+        /* Glitch numérico suave y más frecuente */
         body.mode-hard .timer-val, 
         body.mode-hard .score-val {
             position: relative;
         }
         
         body.mode-hard .timer-val {
-            animation: glitchNumberSoft 2.5s infinite;
+            animation: glitchNumberSoft 2s infinite;
         }
 
         @keyframes glitchNumberSoft {
-            0%, 92%, 100% { transform: translate(0, 0); opacity: 1; }
-            93% { transform: translate(-3px, 1px); color: #ff0055; opacity: 0.85; }
-            94% { transform: translate(3px, -1px); color: #00ffff; opacity: 0.85; }
-            95% { transform: translate(-1px, 2px); color: #ffffff; opacity: 1; }
+            0%, 85%, 100% { transform: translate(0, 0); opacity: 1; text-shadow: none; }
+            86% { transform: translate(-4px, 2px); color: #ff0055; opacity: 0.9; text-shadow: 2px 0 cyan; }
+            87% { transform: translate(4px, -2px); color: #00ffff; opacity: 0.9; text-shadow: -2px 0 #ff0055; }
+            88% { transform: translate(-2px, 1px); color: #ffffff; opacity: 1; }
         }
 
         .timer-val {
@@ -209,15 +215,15 @@
             background: linear-gradient(45deg, var(--prep-hard-start), var(--prep-hard-end));
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
-            animation: pulseDegradado 1.5s ease-in-out infinite alternate, shakePrep 0.3s ease-in-out infinite alternate, glitchText 0.15s infinite;
+            animation: pulseDegradado 1.5s ease-in-out infinite alternate, shakePrep 0.3s ease-in-out infinite alternate, glitchText 0.12s infinite;
         }
 
         @keyframes glitchText {
             0% { transform: translate(0, 0); }
-            20% { transform: translate(-2px, 1px); }
-            40% { transform: translate(2px, -1px); }
-            60% { transform: translate(-1px, 2px); }
-            80% { transform: translate(1px, -2px); }
+            20% { transform: translate(-3px, 2px); }
+            40% { transform: translate(3px, -1px); }
+            60% { transform: translate(-1px, 3px); }
+            80% { transform: translate(2px, -3px); }
             100% { transform: translate(0, 0); }
         }
 
@@ -296,7 +302,7 @@
 
         body.mode-hard .summary-box {
             background: #20020d;
-            border-color: #831843;
+            border-color: #9d174d;
         }
 
         .summary-header {
@@ -403,12 +409,18 @@
 
         body.mode-hard .btn-reset {
             background: #fbcfe8;
-            box-shadow: 0 0 15px rgba(219, 39, 119, 0.3);
+            box-shadow: 0 0 20px rgba(219, 39, 119, 0.4);
+            animation: pulseBorder 1.5s infinite alternate;
+        }
+
+        @keyframes pulseBorder {
+            0% { box-shadow: 0 0 15px rgba(219, 39, 119, 0.4); }
+            100% { box-shadow: 0 0 30px rgba(219, 39, 119, 0.8); }
         }
 
         body.mode-hard .btn-reset:hover {
             background: #fbcfe8;
-            box-shadow: 0 0 25px rgba(219, 39, 119, 0.8);
+            box-shadow: 0 0 35px rgba(219, 39, 119, 1);
         }
 
         .btn-reset:hover {
@@ -478,6 +490,30 @@
             50% { transform: scale(1.03); }
             100% { transform: scale(1); }
         }
+
+        /* Más animaciones pantalla final (bouncy/elástica secuencial y destellos) */
+        @keyframes fillGridChain {
+            0% { transform: scaleY(0) scaleX(0.8) skew(10deg); opacity: 0; filter: blur(4px); }
+            40% { transform: scaleY(1.15) scaleX(1) skew(-4deg); opacity: 1; filter: blur(0px); }
+            70% { transform: scaleY(0.95) scaleX(1) skew(2deg); }
+            100% { transform: scaleY(1) scaleX(1) skew(0deg); opacity: 1; }
+        }
+
+        @keyframes countUpIn {
+            0% { opacity: 0; transform: translateY(20px) scale(0.9); }
+            60% { transform: translateY(-5px) scale(1.02); }
+            100% { opacity: 1; transform: translateY(0) scale(1); }
+        }
+
+        .summary-title {
+            animation: countUpIn 0.7s cubic-bezier(0.34, 1.56, 0.64, 1);
+            position: relative;
+        }
+        
+        /* Destello sutil en el resumen en modo difícil */
+        body.mode-hard .summary-title {
+            text-shadow: 0 0 15px #ff0055;
+        }
     </style>
 </head>
 <body>
@@ -534,6 +570,28 @@
             
             osc.start();
             osc.stop(audioCtx.currentTime + duration);
+        }
+
+        // Sonido de victoria/transición extra
+        function playSuccessSparkle() {
+            if (audioCtx.state === 'suspended') audioCtx.resume();
+            const now = audioCtx.currentTime;
+            
+            const freqs = [523.25, 659.25, 783.99, 1046.5]; // Arpegio Do Mayor
+            freqs.forEach((f, i) => {
+                const osc = audioCtx.createOscillator();
+                const gain = audioCtx.createGain();
+                osc.frequency.value = f;
+                osc.type = 'sine';
+                gain.gain.setValueAtTime(0, now + i * 0.08);
+                gain.gain.linearRampToValueAtTime(0.12, now + i * 0.08 + 0.02);
+                gain.gain.exponentialRampToValueAtTime(0.0001, now + i * 0.08 + 0.3);
+                
+                osc.connect(gain);
+                gain.connect(audioCtx.destination);
+                osc.start(now + i * 0.08);
+                osc.stop(now + i * 0.08 + 0.3);
+            });
         }
 
         const GAME_STATES = {
@@ -656,7 +714,9 @@
             gameCard.classList.add('animate-pop');
         }
 
-        nextBtn.addEventListener('click', () => {
+        // Nueva funcionalidad: Dar al espacio para pasar de ronda (cuando estamos en stopped)
+        // También funciona el botón de abajo a la derecha.
+        function advanceRoundOrSummary() {
             if (currentState === GAME_STATES.SUMMARY) {
                 nextRound();
             } else if (currentState === GAME_STATES.STOPPED) {
@@ -669,7 +729,9 @@
             } else if (currentState === GAME_STATES.IDLE) {
                 nextRound();
             }
-        });
+        }
+
+        nextBtn.addEventListener('click', advanceRoundOrSummary);
 
         generateTarget();
         window.currTimerVal = timerVal;
@@ -696,6 +758,10 @@
                 else if (currentState === GAME_STATES.RUNNING) {
                     stopTimer();
                 }
+                // Añadido: Salto de ronda al presionar espacio en estado STOPPED
+                else if (currentState === GAME_STATES.STOPPED) {
+                    advanceRoundOrSummary();
+                }
             }
         });
 
@@ -715,7 +781,6 @@
             
             playTone(600, 0.15, 'triangle');
 
-            // Ruido constante suave en modo difícil (bajado el volumen de 0.08 a 0.02)
             if (isHardMode) {
                 if (audioCtx.state === 'suspended') audioCtx.resume();
                 runningToneOsc = audioCtx.createOscillator();
@@ -782,13 +847,13 @@
                 playTone(660, 0.3, 'sine'); 
             } else {
                 window.currScoreVal.style.color = 'var(--success-color)';
-                playTone(880, 0.3, 'sine');
+                playSuccessSparkle(); // Sonido adicional alegre al acertar
             }
 
             if (round < 5) {
-                instructions.textContent = "¡Ronda parada! Pulsa el botón de la flecha para la siguiente ronda.";
+                instructions.textContent = "¡Ronda parada! Pulsa espacio o el botón para la siguiente ronda.";
             } else {
-                instructions.textContent = "¡Partida completada! Pulsa el botón para ver el resumen final.";
+                instructions.textContent = "¡Partida completada! Pulsa espacio o el botón para ver el resumen final.";
             }
         }
 
@@ -821,7 +886,7 @@
                 </div>
             `;
 
-            instructions.textContent = "Resumen final. Pulsa el botón de reinicio para volver a jugar.";
+            instructions.textContent = "Resumen final. Pulsa espacio o el botón para volver a jugar.";
             nextBtn.innerHTML = '<svg viewBox="0 0 24 24" style="animation: spinPulse 6s linear infinite;"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z"/></svg>';
 
             playTone(1000, 0.2, 'sine');
