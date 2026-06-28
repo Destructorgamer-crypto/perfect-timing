@@ -5,18 +5,23 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dialed Time</title>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;900&display=swap');
 
         :root {
-            --bg-color: #ffffff; /* Fondo blanco */
-            --card-bg: #000000; /* Cuadrado negro */
+            --bg-color: #ffffff; 
+            --card-bg: #000000; 
             --text-main: #ffffff;
             --text-muted: #808080;
-            --prep-color-start: #ff7e5f; /* Degradado de preparación inicial */
+            --prep-color-start: #ff7e5f; 
             --prep-color-end: #feb47b; 
             --run-color: #ffffff;
             --success-color: #22c55e;
             --fail-color: #ef4444;
+            /* Colores modo difícil */
+            --card-bg-hard: #1a0f0f;
+            --prep-hard-start: #3b0764;
+            --prep-hard-end: #831843;
+            --run-hard-color: #fbcfe8;
         }
 
         * {
@@ -52,8 +57,13 @@
             box-shadow: 0 30px 60px -12px rgba(0, 0, 0, 0.5);
             position: relative;
             border: 1px solid rgba(255, 255, 255, 0.2);
-            transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.5s ease;
+            transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.5s ease, background-color 0.4s ease, border-color 0.4s ease;
             animation: cardFloat 4s ease-in-out infinite alternate;
+        }
+
+        body.mode-hard .game-card {
+            background-color: var(--card-bg-hard);
+            border-color: rgba(219, 39, 119, 0.3);
         }
 
         @keyframes cardFloat {
@@ -74,10 +84,61 @@
             letter-spacing: 0.5px;
         }
 
+        /* Toggle de Modo Difícil (Esquina superior izquierda dentro de la tarjeta negra) */
+        .hard-mode-toggle {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.9rem;
+            font-weight: 700;
+            color: var(--text-muted);
+            cursor: pointer;
+            transition: color 0.3s ease;
+        }
+
+        .hard-mode-toggle:hover {
+            color: #f472b6;
+        }
+
+        .toggle-switch {
+            width: 38px;
+            height: 20px;
+            background: #333;
+            border-radius: 20px;
+            position: relative;
+            transition: background 0.3s;
+        }
+
+        .toggle-switch::before {
+            content: '';
+            position: absolute;
+            width: 16px;
+            height: 16px;
+            background: #808080;
+            border-radius: 50%;
+            top: 2px;
+            left: 2px;
+            transition: transform 0.3s, background 0.3s;
+        }
+
+        body.mode-hard .toggle-switch {
+            background: #be185d;
+        }
+
+        body.mode-hard .toggle-switch::before {
+            transform: translateX(18px);
+            background: #fbcfe8;
+        }
+
         .target-display {
             font-size: 1.25rem;
             font-weight: 900;
             color: var(--text-main);
+            transition: color 0.3s ease;
+        }
+
+        body.mode-hard .target-display {
+            color: #fbcfe8;
         }
 
         .main-display {
@@ -99,9 +160,17 @@
             line-height: 0.9;
         }
 
-        /* Cambios de estado temporizador con degradados y animaciones */
-        body.state-preparing .timer-val {
+        /* Preparación modo normal */
+        body:not(.mode-hard).state-preparing .timer-val {
             background: linear-gradient(45deg, var(--prep-color-start), var(--prep-color-end));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: pulseDegradado 1.5s ease-in-out infinite alternate, shakePrep 0.3s ease-in-out infinite alternate;
+        }
+
+        /* Preparación modo difícil */
+        body.mode-hard.state-preparing .timer-val {
+            background: linear-gradient(45deg, var(--prep-hard-start), var(--prep-hard-end));
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             animation: pulseDegradado 1.5s ease-in-out infinite alternate, shakePrep 0.3s ease-in-out infinite alternate;
@@ -114,13 +183,16 @@
 
         body.state-running .timer-val {
             color: var(--run-color);
-            text-shadow: 0 0 20px rgba(255, 255, 255, 0.5);
-            animation: runningGlow 1s ease-in-out infinite alternate;
         }
 
-        @keyframes runningGlow {
-            0% { text-shadow: 0 0 10px rgba(255, 255, 255, 0.2); }
-            100% { text-shadow: 0 0 25px rgba(255, 255, 255, 0.8); }
+        body.mode-hard.state-running .timer-val {
+            color: var(--run-hard-color);
+        }
+
+        /* Ocultar el tiempo en modo difícil al correr */
+        body.mode-hard.state-running .timer-val {
+            font-size: 3rem;
+            color: transparent;
         }
 
         .score-label {
@@ -144,7 +216,7 @@
             letter-spacing: -2px;
         }
 
-        /* Resumen estilo dialed */
+        /* Resumen estilo dialed con animaciones elásticas */
         .summary-title {
             font-size: 5.5rem;
             font-weight: 900;
@@ -205,13 +277,22 @@
             font-weight: 900;
             position: relative;
             color: #fff;
-            animation: fillGrid 0.8s ease-out forwards;
             transform-origin: bottom;
+            animation: fillGridChain 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+            opacity: 0;
         }
 
-        @keyframes fillGrid {
-            0% { transform: scaleY(0); opacity: 0; }
-            100% { transform: scaleY(1); opacity: 1; }
+        /* Cadena de apariciones elásticas (animación pantalla final) */
+        .round-box:nth-child(1) { animation-delay: 0.1s; }
+        .round-box:nth-child(2) { animation-delay: 0.2s; }
+        .round-box:nth-child(3) { animation-delay: 0.3s; }
+        .round-box:nth-child(4) { animation-delay: 0.4s; }
+        .round-box:nth-child(5) { animation-delay: 0.5s; }
+
+        @keyframes fillGridChain {
+            0% { transform: scaleY(0) scaleX(0.8); opacity: 0; }
+            60% { transform: scaleY(1.08) scaleX(1); opacity: 1; }
+            100% { transform: scaleY(1) scaleX(1); opacity: 1; }
         }
 
         .round-box::after {
@@ -229,7 +310,7 @@
             z-index: 2;
         }
 
-        /* Colores dinámicos para las notas (escala de tonos de Dialed) */
+        /* Colores dinámicos para las notas */
         .round-box.grade-poor { background-color: #591919; } 
         .round-box.grade-ok { background-color: #594419; } 
         .round-box.grade-good { background-color: #401959; } 
@@ -252,6 +333,10 @@
             transition: color 0.3s ease;
         }
 
+        body.mode-hard .instructions {
+            color: #fbcfe8;
+        }
+
         .btn-reset {
             width: 60px;
             height: 60px;
@@ -265,6 +350,16 @@
             border: none;
             outline: none;
             box-shadow: 0 0 15px rgba(255, 255, 255, 0.1);
+        }
+
+        body.mode-hard .btn-reset {
+            background: #fbcfe8;
+            box-shadow: 0 0 15px rgba(219, 39, 119, 0.3);
+        }
+
+        body.mode-hard .btn-reset:hover {
+            background: #fbcfe8;
+            box-shadow: 0 0 25px rgba(219, 39, 119, 0.8);
         }
 
         .btn-reset:hover {
@@ -340,6 +435,10 @@
 
     <div class="game-card" id="gameCard">
         <div class="card-top" id="cardTopNav">
+            <div class="hard-mode-toggle" id="hardModeToggle">
+                <span>Modo Difícil</span>
+                <div class="toggle-switch" id="toggleSwitch"></div>
+            </div>
             <div class="round-display">Ronda: <span id="roundVal">1</span>/5</div>
             <div class="target-display">Objetivo: <span id="targetVal">0.00</span>s</div>
         </div>
@@ -406,6 +505,7 @@
         let chargeInterval = null;
         let chargePitch = 150;
         let roundScores = [];
+        let isHardMode = false;
 
         const body = document.body;
         const gameCard = document.getElementById('gameCard');
@@ -419,8 +519,23 @@
         const cardTopNav = document.getElementById('cardTopNav');
         const mainDisplayArea = document.getElementById('mainDisplayArea');
         const cardBottomNav = document.getElementById('cardBottomNav');
+        const hardModeToggle = document.getElementById('hardModeToggle');
+
+        // Interruptor Modo Difícil
+        hardModeToggle.addEventListener('click', () => {
+            if (currentState === GAME_STATES.IDLE || currentState === GAME_STATES.SUMMARY) {
+                isHardMode = !isHardMode;
+                if (isHardMode) {
+                    body.classList.add('mode-hard');
+                } else {
+                    body.classList.remove('mode-hard');
+                }
+                nextRound();
+            }
+        });
 
         function generateTarget() {
+            // Tiempos más variados: random puro de 1.00s a 10.00s
             targetTime = Math.floor(Math.random() * 901 + 100) / 100;
             targetVal.textContent = targetTime.toFixed(2);
         }
@@ -444,7 +559,7 @@
             timerVal.textContent = "0.00";
             scoreLabel.textContent = "";
             scoreVal.textContent = "";
-            body.className = '';
+            body.className = isHardMode ? 'mode-hard' : '';
             scoreVal.className = 'score-val';
             instructions.className = 'instructions';
             gameCard.className = 'game-card';
@@ -480,7 +595,9 @@
             generateTarget();
             roundVal.textContent = round;
             currentState = GAME_STATES.IDLE;
-            instructions.textContent = "Mantén espacio para cargar. Suelta para iniciar.";
+            instructions.textContent = isHardMode 
+                ? "Modo Difícil activado. ¡Suelta para iniciar y reza por tu ritmo interno!" 
+                : "Mantén espacio para cargar. Suelta para iniciar.";
             gameCard.classList.add('animate-pop');
         }
 
@@ -505,7 +622,7 @@
 
                 if (currentState === GAME_STATES.IDLE) {
                     currentState = GAME_STATES.PREPARING;
-                    body.className = 'state-preparing';
+                    body.className = (isHardMode ? 'mode-hard ' : '') + 'state-preparing';
                     instructions.textContent = "Cargando... Suelta para empezar.";
                     
                     chargePitch = 150;
@@ -531,7 +648,7 @@
 
         function startTimer() {
             currentState = GAME_STATES.RUNNING;
-            body.className = 'state-running';
+            body.className = (isHardMode ? 'mode-hard ' : '') + 'state-running';
             instructions.textContent = "Pulsa espacio otra vez para parar.";
             
             playTone(600, 0.15, 'triangle');
@@ -540,12 +657,19 @@
             timerInterval = setInterval(() => {
                 let now = performance.now();
                 elapsedTime = (now - timerStart) / 1000;
-                window.currTimerVal.textContent = elapsedTime.toFixed(2);
+                
+                if (!isHardMode) {
+                    window.currTimerVal.textContent = elapsedTime.toFixed(2);
+                } else {
+                    window.currTimerVal.textContent = "-"; // Oculto en modo difícil
+                }
 
                 if (Math.floor(elapsedTime) > Math.floor(elapsedTime - 0.01)) {
                     playTone(400, 0.05, 'sine');
-                    window.currTimerVal.classList.add('timer-tick-anim');
-                    setTimeout(() => window.currTimerVal.classList.remove('timer-tick-anim'), 150);
+                    if (!isHardMode) {
+                        window.currTimerVal.classList.add('timer-tick-anim');
+                        setTimeout(() => window.currTimerVal.classList.remove('timer-tick-anim'), 150);
+                    }
                 }
             }, 10);
         }
@@ -553,7 +677,7 @@
         function stopTimer() {
             clearInterval(timerInterval);
             currentState = GAME_STATES.STOPPED;
-            body.className = '';
+            body.className = isHardMode ? 'mode-hard' : '';
 
             let diff = Math.abs(elapsedTime - targetTime);
             let rawScore = 10 - (diff * 10);
