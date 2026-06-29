@@ -164,7 +164,6 @@
             opacity: 0.3;
         }
 
-        /* Indicador de carga de color */
         body.state-preparing .timer-val {
             background: linear-gradient(45deg, #a855f7, #ec4899);
             -webkit-background-clip: text;
@@ -315,7 +314,6 @@
             height: 60px;
         }
 
-        /* Instrucciones de texto más pequeñas */
         .instructions {
             font-size: 0.85rem;
             font-weight: 600;
@@ -574,7 +572,7 @@
             </button>
         </div>
 
-        <div class="card-top" id="cardTopBarWithRounds">
+        <div class="card-top" id="TopBarWithRounds">
             <div class="round-display">Ronda: <span id="roundVal">1</span>/5</div>
         </div>
 
@@ -615,13 +613,12 @@
         let glitchNode = null;
         let glitchInterval = null;
 
-        // Pitido grave, constante y con vibración (tipo sierra)
         function startGraveGlitchNoise() {
             if (audioCtx.state === 'suspended') audioCtx.resume();
             
             glitchNode = audioCtx.createOscillator();
             glitchNode.type = 'sawtooth';
-            glitchNode.frequency.value = 70; // Tono base muy grave
+            glitchNode.frequency.value = 70;
 
             const filter = audioCtx.createBiquadFilter();
             filter.type = 'lowpass';
@@ -636,7 +633,6 @@
             
             glitchNode.start();
 
-            // Ligeros micro-saltos en la frecuencia para dar la sensación de inestabilidad/tensión
             glitchInterval = setInterval(() => {
                 if (!hardMode || currentState !== GAME_STATES.RUNNING) return;
                 const randomShift = Math.floor(Math.random() * 40) - 20;
@@ -718,6 +714,7 @@
         let chargePitch = 150;
         let roundScores = [];
         let hardMode = false;
+        let stopCooldown = false; // Bandera de seguridad para evitar que mantener espacio avance de golpe
 
         const body = document.body;
         const gameCard = document.getElementById('gameCard');
@@ -773,7 +770,7 @@
             gameCard.className = 'game-card';
             
             document.getElementById('TopBarWithRounds').style.display = "flex";
-            targetBarWrapper.style.display = "flex"; // Se asegura que la barra siempre se muestre
+            targetBarWrapper.style.display = "flex";
 
             mainDisplayArea.innerHTML = `
                 <div class="timer-val" id="timerVal">0.00</div>
@@ -808,11 +805,11 @@
             window.currScoreVal = refs.recreatedScoreVal;
 
             generateTarget();
-            // Mostrar los valores de la ronda actual
             const roundDisplayEl = document.getElementById('roundVal');
             if(roundDisplayEl) roundDisplayEl.textContent = round;
             hardBadge.style.display = hardMode ? "inline-block" : "none";
             currentState = GAME_STATES.IDLE;
+            stopCooldown = false; // Se resetea el bloqueo al cargar una ronda nueva
             instructions.textContent = "Mantén espacio para cargar. Suelta para iniciar el cronómetro.";
             gameCard.classList.add('animate-pop');
         }
@@ -865,7 +862,7 @@
         generateTarget();
         window.currTimerVal = timerVal;
         window.currScoreLabel = scoreLabel;
-        window.currScoreVal = scoreVal;
+        window.currScoreVal = scoreVal = scoreVal;
 
         window.addEventListener('keydown', (e) => {
             if (e.code === 'Space') {
@@ -887,7 +884,8 @@
                 else if (currentState === GAME_STATES.RUNNING) {
                     stopTimer();
                 }
-                else if (currentState === GAME_STATES.STOPPED) {
+                // Se añade la condición stopCooldown para evitar que la misma pulsación que detuvo el cronómetro lo salte de largo
+                else if (currentState === GAME_STATES.STOPPED && !stopCooldown) {
                     advanceRoundOrSummary();
                 }
             }
@@ -898,6 +896,9 @@
                 if (currentState === GAME_STATES.PREPARING) {
                     clearInterval(chargeInterval);
                     startTimer();
+                } else if (currentState === GAME_STATES.STOPPED) {
+                    // Al soltar la tecla tras parar el tiempo, se levanta el bloqueo de seguridad
+                    stopCooldown = false;
                 }
             }
         });
@@ -940,6 +941,7 @@
             }
 
             currentState = GAME_STATES.STOPPED;
+            stopCooldown = true; // Activa el bloqueo para que la tecla pulsada no avance de pantalla de inmediato
             body.classList.remove('state-preparing', 'state-running');
 
             let finalScore = getCalculatedScore(elapsedTime, targetTime);
@@ -977,9 +979,9 @@
             window.currScoreVal.classList.add('animate-pop');
 
             if (round < 5) {
-                instructions.textContent = "¡Ronda parada! Pulsa espacio o el botón para la siguiente ronda.";
+                instructions.textContent = "¡Ronda parada! Pulsa espacio de nuevo para la siguiente ronda.";
             } else {
-                instructions.textContent = "¡Partida completada! Pulsa espacio o el botón para ver el resumen final.";
+                instructions.textContent = "¡Partida completada! Pulsa espacio de nuevo para ver el resumen final.";
             }
         }
 
