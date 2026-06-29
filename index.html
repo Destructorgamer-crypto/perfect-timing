@@ -90,7 +90,6 @@
             letter-spacing: 0.5px;
         }
 
-        /* Rediseño del bloque de objetivo */
         .target-bar {
             display: flex;
             justify-content: center;
@@ -159,18 +158,24 @@
             line-height: 0.9;
         }
 
-        /* Ocultar cronómetro en modo difícil para aumentar dificultad */
         body.state-hard.state-running .timer-val {
             font-size: 2rem;
             color: var(--text-muted);
             opacity: 0.3;
         }
 
+        /* Indicador de carga de color */
         body.state-preparing .timer-val {
-            background: linear-gradient(45deg, var(--prep-color-start), var(--prep-color-end));
+            background: linear-gradient(45deg, #a855f7, #ec4899);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             animation: shakePrep 0.3s ease-in-out infinite alternate;
+        }
+
+        body.state-hard.state-preparing .timer-val {
+            background: linear-gradient(45deg, #3b82f6, #06b6d4);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
         }
 
         body.state-running .timer-val {
@@ -310,9 +315,10 @@
             height: 60px;
         }
 
+        /* Instrucciones de texto más pequeñas */
         .instructions {
-            font-size: 1.1rem;
-            font-weight: 700;
+            font-size: 0.85rem;
+            font-weight: 600;
             color: var(--text-muted);
             max-width: 450px;
             line-height: 1.4;
@@ -568,11 +574,11 @@
             </button>
         </div>
 
-        <div class="card-top" id="cardTopBarContainer">
+        <div class="card-top" id="cardTopBarWithRounds">
             <div class="round-display">Ronda: <span id="roundVal">1</span>/5</div>
         </div>
 
-        <div class="target-bar" id="targetBarWrapper">
+        <div class="target-bar" id="targetBarWrapper" style="display: flex;">
             <span class="target-label">Tiempo objetivo:</span>
             <div class="target-value">
                 <span id="targetVal">0.00</span>s
@@ -606,32 +612,23 @@
     <script>
         const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
 
-        // Generador de ruido/glitch constante para modo difícil
         let glitchNode = null;
         let glitchInterval = null;
 
-        function startGlitchNoise() {
+        // Pitido grave, constante y con vibración (tipo sierra)
+        function startGraveGlitchNoise() {
             if (audioCtx.state === 'suspended') audioCtx.resume();
             
-            // Crea un buffer de ruido blanco aleatorio
-            const bufferSize = audioCtx.sampleRate * 0.5;
-            const buffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
-            const data = buffer.getChannelData(0);
-            for (let i = 0; i < bufferSize; i++) {
-                data[i] = Math.random() * 2 - 1;
-            }
-
-            glitchNode = audioCtx.createBufferSource();
-            glitchNode.buffer = buffer;
-            glitchNode.loop = true;
+            glitchNode = audioCtx.createOscillator();
+            glitchNode.type = 'sawtooth';
+            glitchNode.frequency.value = 70; // Tono base muy grave
 
             const filter = audioCtx.createBiquadFilter();
-            filter.type = 'bandpass';
-            filter.frequency.value = 800;
-            filter.Q.value = 0.5;
+            filter.type = 'lowpass';
+            filter.frequency.value = 300;
 
             const gainNode = audioCtx.createGain();
-            gainNode.gain.setValueAtTime(0.08, audioCtx.currentTime);
+            gainNode.gain.setValueAtTime(0.1, audioCtx.currentTime);
 
             glitchNode.connect(filter);
             filter.connect(gainNode);
@@ -639,16 +636,15 @@
             
             glitchNode.start();
 
-            // Modulación aleatoria de frecuencia y ganancia para efecto glitch "constante y nervioso"
+            // Ligeros micro-saltos en la frecuencia para dar la sensación de inestabilidad/tensión
             glitchInterval = setInterval(() => {
                 if (!hardMode || currentState !== GAME_STATES.RUNNING) return;
-                filter.frequency.value = Math.floor(Math.random() * 1500) + 300;
-                filter.type = Math.random() > 0.5 ? 'bandpass' : 'lowpass';
-                gainNode.gain.setValueAtTime(Math.random() * 0.08 + 0.02, audioCtx.currentTime);
-            }, 75);
+                const randomShift = Math.floor(Math.random() * 40) - 20;
+                glitchNode.frequency.setValueAtTime(70 + randomShift, audioCtx.currentTime);
+            }, 50);
         }
 
-        function stopGlitchNoise() {
+        function stopGraveGlitchNoise() {
             if (glitchInterval) clearInterval(glitchInterval);
             if (glitchNode) {
                 try {
@@ -725,6 +721,7 @@
 
         const body = document.body;
         const gameCard = document.getElementById('gameCard');
+        const targetBarWrapper = document.getElementById('targetBarWrapper');
         const targetVal = document.getElementById('targetVal');
         const roundVal = document.getElementById('roundVal');
         const timerVal = document.getElementById('timerVal');
@@ -775,7 +772,9 @@
             instructions.className = 'instructions';
             gameCard.className = 'game-card';
             
-            document.getElementById('cardTopBarContainer').style.display = "flex";
+            document.getElementById('TopBarWithRounds').style.display = "flex";
+            targetBarWrapper.style.display = "flex"; // Se asegura que la barra siempre se muestre
+
             mainDisplayArea.innerHTML = `
                 <div class="timer-val" id="timerVal">0.00</div>
                 <div class="score-label" id="scoreLabel"></div>
@@ -809,7 +808,9 @@
             window.currScoreVal = refs.recreatedScoreVal;
 
             generateTarget();
-            roundVal.textContent = round;
+            // Mostrar los valores de la ronda actual
+            const roundDisplayEl = document.getElementById('roundVal');
+            if(roundDisplayEl) roundDisplayEl.textContent = round;
             hardBadge.style.display = hardMode ? "inline-block" : "none";
             currentState = GAME_STATES.IDLE;
             instructions.textContent = "Mantén espacio para cargar. Suelta para iniciar el cronómetro.";
@@ -907,7 +908,7 @@
             
             if (hardMode) {
                 instructions.textContent = "Modo Difícil activo. ¡Cronómetro oculto! Pulsa espacio para parar.";
-                startGlitchNoise();
+                startGraveGlitchNoise();
             } else {
                 instructions.textContent = "Pulsa espacio otra vez para parar.";
                 playTone(600, 0.15, 'triangle');
@@ -918,7 +919,6 @@
                 let now = performance.now();
                 elapsedTime = (now - timerStart) / 1000;
                 
-                // Si estamos en modo difícil, no actualizamos el contador visible para añadir dificultad
                 if (!hardMode) {
                     window.currTimerVal.textContent = elapsedTime.toFixed(2);
                     if (Math.floor(elapsedTime) > Math.floor(elapsedTime - 0.01)) {
@@ -936,7 +936,7 @@
             clearInterval(timerInterval);
             
             if (hardMode) {
-                stopGlitchNoise();
+                stopGraveGlitchNoise();
             }
 
             currentState = GAME_STATES.STOPPED;
@@ -986,7 +986,7 @@
         function showSummaryScreen() {
             currentState = GAME_STATES.SUMMARY;
             
-            const cardTop = document.getElementById('cardTopBarContainer');
+            const cardTop = document.getElementById('TopBarWithRounds');
             const targetBar = document.getElementById('targetBarWrapper');
             if (cardTop) cardTop.style.display = "none";
             if (targetBar) targetBar.style.display = "none";
