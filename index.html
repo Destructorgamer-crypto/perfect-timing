@@ -8,20 +8,16 @@
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;900&display=swap');
 
         :root {
-            --bg-color: #ffffff; 
-            --card-bg: #000000; 
-            --text-main: #ffffff;
-            --text-muted: #808080;
-            --prep-color-start: #ff7e5f; 
-            --prep-color-end: #feb47b; 
-            --run-color: #ffffff;
-            --success-color: #22c55e;
+            --bg-color: #faf9f6; /* Blanco roto cálido y muy suave */
+            --card-bg: #ffffff; /* Tarjeta blanca pura */
+            --text-main: #111827; /* Gris oscuro casi negro */
+            --text-muted: #9ca3af; /* Gris elegante para textos secundarios */
+            --prep-color-start: #3b82f6; /* Azul suave para preparación */
+            --prep-color-end: #60a5fa;
+            --run-color: #1f2937;
+            --success-color: #10b981; /* Verde esmeralda para aciertos */
             --fail-color: #ef4444;
-            --ok-color: #eab308;
-            --card-bg-hard: #0f0208;
-            --prep-hard-start: #580242;
-            --prep-hard-end: #9d174d;
-            --run-hard-color: #fbcfe8;
+            --ok-color: #f59e0b;
         }
 
         * {
@@ -34,22 +30,23 @@
 
         body {
             background-color: var(--bg-color);
-            color: #000000;
+            color: var(--text-main);
             min-height: 100vh;
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
             overflow: hidden;
-            transition: background-color 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+            transition: background-color 0.6s ease;
         }
 
-        body.mode-hard {
-            background-color: #000000;
-        }
-
-        body.mode-color {
-            background-color: #1a1a24;
+        body.state-hard {
+            background-color: #1f2937;
+            --bg-color: #1f2937;
+            --card-bg: #111827;
+            --text-main: #f3f4f6;
+            --text-muted: #6b7280;
+            --run-color: #ffffff;
         }
 
         .game-card {
@@ -62,39 +59,21 @@
             flex-direction: column;
             justify-content: space-between;
             padding: 2.5rem 3rem;
-            box-shadow: 0 30px 60px -12px rgba(0, 0, 0, 0.5);
+            box-shadow: 0 15px 35px -5px rgba(0, 0, 0, 0.05), 0 10px 15px -5px rgba(0, 0, 0, 0.04);
             position: relative;
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.5s ease, background-color 0.4s ease, border-color 0.4s ease;
+            border: 1px solid #e5e7eb;
+            transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.5s ease, border-color 0.4s ease, background-color 0.6s ease;
             animation: cardFloat 4s ease-in-out infinite alternate;
         }
 
-        body.mode-hard .game-card {
-            background-color: var(--card-bg-hard);
-            border-color: rgba(219, 39, 119, 0.6);
-            box-shadow: 0 30px 80px -12px rgba(219, 39, 119, 0.3);
-        }
-
-        body.mode-color .game-card {
-            background-color: #0f0f13;
-            border-color: rgba(99, 102, 241, 0.4);
-            box-shadow: 0 30px 80px -12px rgba(79, 70, 229, 0.2);
+        body.state-hard .game-card {
+            border-color: #374151;
+            box-shadow: 0 20px 50px -12px rgba(0, 0, 0, 0.5);
         }
 
         @keyframes cardFloat {
             0% { transform: translateY(0px); }
-            100% { transform: translateY(-8px); }
-        }
-
-        body.mode-hard .game-card {
-            animation: cardFloat 4s ease-in-out infinite alternate, glitchCardCenter 2.2s infinite ease-in-out;
-        }
-
-        @keyframes glitchCardCenter {
-            0%, 35%, 39%, 100% { transform: translateY(-8px) skew(0deg); border-color: rgba(219, 39, 119, 0.6); box-shadow: 0 30px 80px -12px rgba(219, 39, 119, 0.3); }
-            36% { transform: translateY(-13px) skew(6deg) scale(0.99); border-color: #ff0055; box-shadow: 0 0 50px rgba(255,0,85,0.5); }
-            37% { transform: translateY(-5px) skew(-6deg) scale(1.01); border-color: #00ffff; box-shadow: 0 0 50px rgba(0,255,255,0.5); }
-            38% { transform: translateY(-10px) skew(2deg); border-color: #9d174d; }
+            100% { transform: translateY(-6px); }
         }
 
         .card-top {
@@ -109,72 +88,27 @@
             font-weight: 900;
             color: var(--text-muted);
             letter-spacing: 0.5px;
-            transition: color 0.3s ease;
         }
-
-        body.mode-hard .round-display { color: #fbcfe8; }
-        body.mode-color .round-display { color: #a5b4fc; }
-
-        .top-toggles {
-            display: flex;
-            gap: 1.5rem;
-            align-items: center;
-            height: 30px;
-        }
-
-        .hard-mode-toggle, .color-mode-toggle {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            font-size: 0.9rem;
-            font-weight: 700;
-            color: var(--text-muted);
-            cursor: pointer;
-            transition: color 0.3s ease;
-        }
-
-        .hard-mode-toggle:hover { color: #f472b6; }
-        .color-mode-toggle:hover { color: #818cf8; }
-
-        .toggle-switch {
-            width: 38px;
-            height: 20px;
-            background: #333;
-            border-radius: 20px;
-            position: relative;
-            transition: background 0.3s;
-        }
-
-        .toggle-switch::before {
-            content: '';
-            position: absolute;
-            width: 16px;
-            height: 16px;
-            background: #808080;
-            border-radius: 50%;
-            top: 2px;
-            left: 2px;
-            transition: transform 0.3s, background 0.3s;
-        }
-
-        body.mode-hard .toggle-switch { background: #be185d; }
-        body.mode-hard .toggle-switch::before { transform: translateX(18px); background: #fbcfe8; }
-
-        body.mode-color .toggle-switch { background: #4f46e5; }
-        body.mode-color .toggle-switch::before { transform: translateX(18px); background: #c7d2fe; }
-
-        body.mode-hard .hard-mode-toggle { color: #fbcfe8; }
-        body.mode-color .color-mode-toggle { color: #c7d2fe; }
 
         .target-display {
             font-size: 1.25rem;
             font-weight: 900;
             color: var(--text-main);
-            transition: color 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
         }
 
-        body.mode-hard .target-display { color: #fbcfe8; }
-        body.mode-color .target-display { color: #c7d2fe; }
+        .hard- badge {
+            background-color: #ef4444;
+            color: white;
+            font-size: 0.75rem;
+            font-weight: 900;
+            padding: 2px 8px;
+            border-radius: 6px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
 
         .main-display {
             display: flex;
@@ -196,46 +130,16 @@
             line-height: 0.9;
         }
 
-        body.mode-hard .timer-val { animation: glitchNumberSoft 2s infinite; }
-
-        @keyframes glitchNumberSoft {
-            0%, 85%, 100% { transform: translate(0, 0); opacity: 1; text-shadow: none; }
-            86% { transform: translate(-4px, 2px); color: #ff0055; opacity: 0.9; text-shadow: 2px 0 cyan; }
-            87% { transform: translate(4px, -2px); color: #00ffff; opacity: 0.9; text-shadow: -2px 0 #ff0055; }
-            88% { transform: translate(-2px, 1px); color: #ffffff; opacity: 1; }
-        }
-
-        body:not(.mode-hard).state-preparing .timer-val {
+        body.state-preparing .timer-val {
             background: linear-gradient(45deg, var(--prep-color-start), var(--prep-color-end));
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
-            animation: pulseDegradado 1.5s ease-in-out infinite alternate, shakePrep 0.3s ease-in-out infinite alternate;
+            animation: shakePrep 0.3s ease-in-out infinite alternate;
         }
 
-        body.mode-hard.state-preparing .timer-val {
-            background: linear-gradient(45deg, var(--prep-hard-start), var(--prep-hard-end));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            animation: pulseDegradado 1.5s ease-in-out infinite alternate, shakePrep 0.3s ease-in-out infinite alternate, glitchText 0.12s infinite;
+        body.state-running .timer-val {
+            color: var(--run-color);
         }
-
-        @keyframes glitchText {
-            0% { transform: translate(0, 0); }
-            20% { transform: translate(-3px, 2px); }
-            40% { transform: translate(3px, -1px); }
-            60% { transform: translate(-1px, 3px); }
-            80% { transform: translate(2px, -3px); }
-            100% { transform: translate(0, 0); }
-        }
-
-        @keyframes pulseDegradado {
-            0% { filter: hue-rotate(0deg); }
-            100% { filter: hue-rotate(360deg); }
-        }
-
-        body.state-running .timer-val { color: var(--run-color); }
-        body.mode-hard.state-running .timer-val { color: var(--run-hard-color); }
-        body.mode-hard.state-running .timer-val { font-size: 3rem; color: transparent; }
 
         .score-label {
             font-size: 1.25rem;
@@ -279,8 +183,8 @@
         }
 
         .summary-box {
-            background: #1a1a1a;
-            border: 2px solid #333333;
+            background: #f3f4f6;
+            border: 2px solid #e5e7eb;
             border-radius: 24px;
             padding: 1.5rem;
             width: 100%;
@@ -288,10 +192,13 @@
             flex-direction: column;
             gap: 1rem;
             animation: popIn 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+            transition: background-color 0.6s ease, border-color 0.6s ease;
         }
 
-        body.mode-hard .summary-box { background: #20020d; border-color: #9d174d; }
-        body.mode-color .summary-box { background: #13131a; border-color: #6366f1; }
+        body.state-hard .summary-box {
+            background: #1f2937;
+            border-color: #374151;
+        }
 
         .summary-header {
             display: flex;
@@ -346,17 +253,17 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: linear-gradient(135deg, transparent 50%, rgba(0,0,0,0.4) 100%);
+            background: linear-gradient(135deg, transparent 50%, rgba(0,0,0,0.2) 100%);
             z-index: 1;
         }
 
         .round-box span { z-index: 2; }
 
-        .round-box.grade-poor { background-color: #591919; } 
-        .round-box.grade-ok { background-color: #854d0e; } 
-        .round-box.grade-good { background-color: #401959; } 
-        .round-box.grade-great { background-color: #2b5919; } 
-        .round-box.grade-perfect { background-color: #193659; } 
+        .round-box.grade-poor { background-color: #f87171; } 
+        .round-box.grade-ok { background-color: #fbbf24; } 
+        .round-box.grade-good { background-color: #60a5fa; } 
+        .round-box.grade-great { background-color: #34d399; } 
+        .round-box.grade-perfect { background-color: #10b981; } 
 
         .card-bottom {
             display: flex;
@@ -376,57 +283,38 @@
             transition: color 0.3s ease;
         }
 
-        body.mode-hard .instructions { color: #fbcfe8; }
-        body.mode-color .instructions { color: #a5b4fc; }
-
         .btn-reset {
             width: 60px;
             height: 60px;
             border-radius: 50%;
-            background: #ffffff;
+            background: #f3f4f6;
             display: flex;
             align-items: center;
             justify-content: center;
             cursor: pointer;
             transition: transform 0.3s ease, background 0.3s ease, box-shadow 0.3s ease;
-            border: none;
+            border: 1px solid #e5e7eb;
             outline: none;
-            box-shadow: 0 0 15px rgba(255, 255, 255, 0.1);
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
         }
 
-        body.mode-hard .btn-reset {
-            background: #fbcfe8;
-            box-shadow: 0 0 20px rgba(219, 39, 119, 0.4);
-            animation: pulseBorder 1.5s infinite alternate;
+        body.state-hard .btn-reset {
+            background: #374151;
+            border-color: #4b5563;
         }
-
-        body.mode-color .btn-reset {
-            background: #c7d2fe;
-            box-shadow: 0 0 20px rgba(79, 70, 229, 0.4);
-            animation: pulseBorderColor 1.5s infinite alternate;
-        }
-
-        @keyframes pulseBorder {
-            0% { box-shadow: 0 0 15px rgba(219, 39, 119, 0.4); }
-            100% { box-shadow: 0 0 30px rgba(219, 39, 119, 0.8); }
-        }
-
-        @keyframes pulseBorderColor {
-            0% { box-shadow: 0 0 15px rgba(79, 70, 229, 0.4); }
-            100% { box-shadow: 0 0 30px rgba(79, 70, 229, 0.8); }
-        }
-
-        body.mode-hard .btn-reset:hover { background: #fbcfe8; box-shadow: 0 0 35px rgba(219, 39, 119, 1); }
-        body.mode-color .btn-reset:hover { background: #c7d2fe; box-shadow: 0 0 35px rgba(79, 70, 229, 1); }
 
         .btn-reset:hover {
             transform: scale(1.15) rotate(180deg);
-            background: #e0e0e0;
-            box-shadow: 0 0 25px rgba(255, 255, 255, 0.6);
+            background: #e5e7eb;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+        }
+
+        body.state-hard .btn-reset:hover {
+            background: #4b5563;
         }
 
         .btn-reset svg {
-            fill: #000000;
+            fill: var(--text-main);
             width: 24px;
             height: 24px;
             transition: transform 0.3s ease;
@@ -448,40 +336,36 @@
             transition: color 0.3s ease;
         }
 
-        .restart-nav-container:hover span { color: #ffffff; }
-        body.mode-hard .restart-nav-container:hover span { color: #fbcfe8; }
-        body.mode-color .restart-nav-container:hover span { color: #a5b4fc; }
+        .restart-nav-container:hover span { color: var(--text-main); }
 
         .btn-restart-nav {
             width: 44px;
             height: 44px;
             border-radius: 50%;
-            background: #222222;
+            background: #f3f4f6;
             display: flex;
             align-items: center;
             justify-content: center;
-            border: 1px solid rgba(255, 255, 255, 0.2);
+            border: 1px solid #e5e7eb;
             transition: all 0.3s ease;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.02);
         }
 
-        body.mode-hard .btn-restart-nav {
-            background: #3a0319;
-            border-color: rgba(219, 39, 119, 0.4);
-        }
-
-        body.mode-color .btn-restart-nav {
-            background: #1e1b4b;
-            border-color: #6366f1;
+        body.state-hard .btn-restart-nav {
+            background: #374151;
+            border-color: #4b5563;
         }
 
         .btn-restart-nav:hover {
             transform: scale(1.1) rotate(-45deg);
-            background: #444444;
-            border-color: rgba(255, 255, 255, 0.4);
+            background: #e5e7eb;
+            border-color: #d1d5db;
         }
 
-        body.mode-hard .btn-restart-nav:hover { background: #831843; border-color: #fbcfe8; }
-        body.mode-color .btn-restart-nav:hover { background: #312e81; border-color: #a5b4fc; }
+        body.state-hard .btn-restart-nav:hover {
+            background: #4b5563;
+            border-color: #6b7280;
+        }
 
         .btn-restart-nav svg {
             fill: var(--text-main);
@@ -503,63 +387,52 @@
         .restart-summary-label {
             font-size: 0.95rem;
             font-weight: 900;
-            color: var(--text-muted);
+            color: var(--text-main);
             text-transform: uppercase;
             letter-spacing: 0.5px;
-            background: rgba(0,0,0,0.6);
-            padding: 4px 10px;
-            border-radius: 8px;
-            border: 1px solid #333;
+            background: #f3f4f6;
+            padding: 6px 12px;
+            border-radius: 12px;
+            border: 1px solid #e5e7eb;
+            transition: background 0.3s ease, border-color 0.3s ease;
+        }
+
+        body.state-hard .restart-summary-label {
+            background: #374151;
+            border-color: #4b5563;
         }
         
-        body.mode-hard .restart-summary-label {
-            color: #fbcfe8;
-            border-color: #9d174d;
-            background: rgba(32, 2, 13, 0.6);
-        }
-
-        body.mode-color .restart-summary-label {
-            color: #c7d2fe;
-            border-color: #4f46e5;
-            background: rgba(15, 23, 42, 0.8);
-        }
-
         .btn-restart-summary {
             width: 44px;
             height: 44px;
             border-radius: 50%;
-            background: #ffffff;
+            background: #f3f4f6;
             display: flex;
             align-items: center;
             justify-content: center;
             cursor: pointer;
             transition: all 0.3s ease;
-            border: none;
+            border: 1px solid #e5e7eb;
             outline: none;
-            box-shadow: 0 0 10px rgba(0,0,0,0.2);
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
         }
 
-        body.mode-hard .btn-restart-summary {
-            background: #fbcfe8;
-            box-shadow: 0 0 10px rgba(219, 39, 119, 0.3);
+        body.state-hard .btn-restart-summary {
+            background: #374151;
+            border-color: #4b5563;
         }
 
-        body.mode-color .btn-restart-summary {
-            background: #c7d2fe;
-            box-shadow: 0 0 10px rgba(79, 70, 229, 0.3);
+        body.state-hard .btn-restart-summary:hover {
+            background: #4b5563;
         }
 
         .btn-restart-summary:hover {
             transform: scale(1.12) translateX(-3px);
-            background: #e0e0e0;
-            box-shadow: 0 0 15px rgba(255, 255, 255, 0.4);
+            background: #e5e7eb;
         }
 
-        body.mode-hard .btn-restart-summary:hover { background: #ffffff; box-shadow: 0 0 20px rgba(219, 39, 119, 0.8); }
-        body.mode-color .btn-restart-summary:hover { background: #ffffff; box-shadow: 0 0 20px rgba(79, 70, 229, 0.8); }
-
         .btn-restart-summary svg {
-            fill: #000000;
+            fill: var(--text-main);
             width: 20px;
             height: 20px;
         }
@@ -573,17 +446,17 @@
 
         @keyframes shakePrep {
             0% { transform: translateY(0); }
-            100% { transform: translateY(-3px); }
+            100% { transform: translateY(-2px); }
         }
 
         .animate-shake { animation: shakeTotal 0.5s ease-in-out; }
 
         @keyframes shakeTotal {
             0%, 100% { transform: translateX(0); }
-            20% { transform: translateX(-8px); }
-            40% { transform: translateX(8px); }
-            60% { transform: translateX(-4px); }
-            85% { transform: translateX(4px); }
+            20% { transform: translateX(-6px); }
+            40% { transform: translateX(6px); }
+            60% { transform: translateX(-3px); }
+            85% { transform: translateX(3px); }
         }
 
         .fade-in { animation: fadeInMsg 0.5s ease-in; }
@@ -599,185 +472,63 @@
             100% { opacity: 1; transform: translateY(0) scale(1); }
         }
 
-        body.mode-hard .summary-title { text-shadow: 0 0 15px #ff0055; }
-
-        /* Estilos pantalla de color optimizados */
-        .color-game-area {
-            display: flex;
-            flex-direction: column;
-            width: 100%;
-            gap: 15px;
-            align-items: center;
-            justify-content: center;
-            height: 100%;
-        }
-
-        .memory-fullscreen-box {
-            width: 100%;
-            height: 320px;
-            border-radius: 24px;
-            border: 4px solid #ffffff;
-            box-shadow: 0 15px 40px rgba(0,0,0,0.4);
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            animation: popIn 0.5s cubic-bezier(0.16, 1, 0.3, 1);
-            position: relative;
-        }
-
-        .memory-fullscreen-title {
-            font-size: 1.5rem;
-            font-weight: 900;
-            background: rgba(0, 0, 0, 0.6);
-            color: #ffffff;
-            padding: 8px 20px;
-            border-radius: 12px;
-            letter-spacing: 1px;
-            text-transform: uppercase;
-            border: 1px solid rgba(255,255,255,0.2);
-            animation: pulseText 2s infinite alternate;
-        }
-
-        @keyframes pulseText {
-            0% { transform: scale(0.98); }
-            100% { transform: scale(1.02); }
-        }
-
-        .memory-timer {
-            position: absolute;
-            top: 20px;
-            right: 20px;
-            font-size: 1.1rem;
-            font-weight: 900;
-            background: rgba(0,0,0,0.7);
-            color: #ef4444;
-            padding: 6px 16px;
-            border-radius: 12px;
-            border: 1px solid #ef4444;
-        }
-
-        .color-adjust-row {
-            display: flex;
-            gap: 24px;
-            width: 100%;
-            align-items: center;
-            justify-content: center;
-            height: 140px;
-        }
-
-        /* Misma proporción y tamaño de la caja de memoria inicial */
-        .color-preview-box {
-            width: 100%;
-            max-width: 320px;
-            height: 130px;
-            border-radius: 20px;
-            border: 3px solid #ffffff;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.3);
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: flex-end;
-            padding-bottom: 8px;
-            transition: opacity 0.4s ease;
-            animation: popIn 0.4s ease-out;
-            position: relative;
-        }
-        
-        .color-box-label {
-            font-size: 0.75rem;
-            font-weight: 900;
-            background: rgba(0,0,0,0.6);
-            color: #fff;
-            padding: 3px 10px;
-            border-radius: 6px;
-            letter-spacing: 0.5px;
-            border: 1px solid rgba(255,255,255,0.1);
-        }
-
-        .sliders-col {
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
-            width: 100%;
-            max-width: 380px;
-            animation: fadeInMsg 0.5s ease-in;
-        }
-
-        .slider-group {
-            display: flex;
-            flex-direction: column;
-            gap: 4px;
-        }
-
-        .slider-label {
-            font-size: 0.9rem;
-            font-weight: 700;
-            color: var(--text-main);
-            display: flex;
-            justify-content: space-between;
-        }
-
-        body.mode-color .slider-label { color: #cbd5e1; }
-
-        .color-slider {
-            -webkit-appearance: none;
-            width: 100%;
-            height: 12px;
-            border-radius: 6px;
-            outline: none;
-            background: #333;
-        }
-
-        .color-slider::-webkit-slider-thumb {
-            -webkit-appearance: none;
-            appearance: none;
-            width: 24px;
-            height: 24px;
-            border-radius: 50%;
-            background: #ffffff;
-            cursor: pointer;
-            box-shadow: 0 0 5px rgba(0,0,0,0.4);
-            transition: transform 0.1s;
-        }
-        
-        .color-slider::-webkit-slider-thumb:hover { transform: scale(1.15); }
-
-        #hueSlider { background: linear-gradient(to right, red, yellow, green, cyan, blue, magenta, red); }
-        #satSlider { background: linear-gradient(to right, #808080, #ff0000); }
-        #lightSlider { background: linear-gradient(to right, #000000, #808080, #ffffff); }
-
-        .results-compare-box {
-            display: flex;
-            gap: 24px;
-            margin: 10px 0 0 0;
-            animation: popIn 0.5s cubic-bezier(0.16, 1, 0.3, 1);
-            align-items: center;
-        }
-
-        .results-preview-item {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 6px;
-        }
-
-        .results-preview-circle {
-            width: 80px;
-            height: 80px;
-            border-radius: 50%;
-            border: 3px solid #ffffff;
-            box-shadow: 0 8px 20px rgba(0,0,0,0.3);
-        }
-
         .timer-tick-anim {
             transform: scale(1.05);
+        }
+
+        .hard-mode-toggle {
+            position: absolute;
+            top: 24px;
+            right: 32px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 0.75rem;
+            font-weight: 900;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: var(--text-muted);
+            cursor: pointer;
+            padding: 6px 12px;
+            border-radius: 12px;
+            border: 1px solid #e5e7eb;
+            background: #f3f4f6;
+            transition: all 0.3s ease;
+        }
+
+        body.state-hard .hard-mode-toggle {
+            background: #374151;
+            border-color: #4b5563;
+            color: #9ca3af;
+        }
+
+        .hard-mode-toggle:hover {
+            border-color: #d1d5db;
+            color: var(--text-main);
+        }
+
+        .hard-indicator {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background-color: var(--text-muted);
+            transition: background-color 0.3s;
+        }
+
+        body.state-hard .hard-indicator {
+            background-color: #ef4444;
+            box-shadow: 0 0 8px #ef4444;
         }
     </style>
 </head>
 <body>
 
     <div class="game-card" id="gameCard">
+        <div class="hard-mode-toggle" id="hardToggleBtn">
+            <span>DIFÍCIL</span>
+            <div class="hard-indicator"></div>
+        </div>
+
         <div class="restart-summary-container" id="restartSummaryContainer" style="display: none;">
             <div class="restart-summary-label" id="restartSummaryLabel">Volver</div>
             <button class="btn-restart-summary" id="restartSummaryBtn" aria-label="Atrás/Reiniciar">
@@ -786,18 +537,11 @@
         </div>
 
         <div class="card-top" id="cardTopBarContainer">
-            <div class="top-toggles" id="topTogglesArea">
-                <div class="hard-mode-toggle" id="hardModeToggle">
-                    <span>Modo Difícil</span>
-                    <div class="toggle-switch" id="toggleSwitch"></div>
-                </div>
-                <div class="color-mode-toggle" id="colorModeToggle">
-                    <span>Modo Color</span>
-                    <div class="toggle-switch" id="colorToggleSwitch"></div>
-                </div>
-            </div>
             <div class="round-display">Ronda: <span id="roundVal">1</span>/5</div>
-            <div class="target-display">Objetivo: <span id="targetVal">0.00</span>s</div>
+            <div class="target-display">
+                Objetivo: <span id="targetVal">0.00</span>s
+                <span id="hardBadge" style="display: none;" class="hard- badge">Difícil</span>
+            </div>
         </div>
 
         <div class="main-display" id="mainDisplayArea">
@@ -877,8 +621,7 @@
             PREPARING: 1,
             RUNNING: 2,
             STOPPED: 3,
-            SUMMARY: 4,
-            MEMORIZING: 5
+            SUMMARY: 4
         };
 
         let currentState = GAME_STATES.IDLE;
@@ -891,14 +634,7 @@
         let chargeInterval = null;
         let chargePitch = 150;
         let roundScores = [];
-        let isHardMode = false;
-        let isColorMode = false;
-        let runningToneOsc = null;
-        let runningToneGain = null;
-
-        let targetH = 0, targetS = 0, targetL = 0;
-        let memoryTimerCount = 5;
-        let memoryTimerInterval = null;
+        let hardMode = false;
 
         const body = document.body;
         const gameCard = document.getElementById('gameCard');
@@ -914,81 +650,8 @@
         const restartSummaryBtn = document.getElementById('restartSummaryBtn');
         const mainDisplayArea = document.getElementById('mainDisplayArea');
         const cardBottomNav = document.getElementById('cardBottomNav');
-        const hardModeToggle = document.getElementById('hardModeToggle');
-        const colorModeToggle = document.getElementById('colorModeToggle');
-
-        hardModeToggle.addEventListener('click', () => {
-            if (isColorMode) return;
-            if (currentState === GAME_STATES.IDLE || currentState === GAME_STATES.SUMMARY) {
-                isHardMode = !isHardMode;
-                updateModesClasses();
-                nextRound();
-            }
-        });
-
-        colorModeToggle.addEventListener('click', () => {
-            if (currentState !== GAME_STATES.SUMMARY && currentState !== GAME_STATES.IDLE && currentState !== GAME_STATES.STOPPED) {
-                return;
-            }
-            isColorMode = !isColorMode;
-            if (isColorMode) {
-                isHardMode = false;
-            }
-            updateModesClasses();
-            nextRound();
-        });
-
-        function updateModesClasses() {
-            body.className = '';
-            if (isHardMode) body.classList.add('mode-hard');
-            if (isColorMode) body.classList.add('mode-color');
-            
-            const topTogglesArea = document.getElementById('topTogglesArea');
-            
-            if(isColorMode) {
-                topTogglesArea.innerHTML = `
-                    <div class="color-mode-toggle" id="backToTimeModeBtn" style="color: #cbd5e1; font-weight:900; cursor:pointer;">
-                        <span>← TIME</span>
-                    </div>
-                `;
-                document.getElementById('backToTimeModeBtn').addEventListener('click', () => {
-                    isColorMode = false;
-                    updateModesClasses();
-                    triggerRestart();
-                });
-            } else {
-                topTogglesArea.innerHTML = `
-                    <div class="hard-mode-toggle" id="hardModeToggle">
-                        <span>Modo Difícil</span>
-                        <div class="toggle-switch" id="toggleSwitch"></div>
-                    </div>
-                    <div class="color-mode-toggle" id="colorModeToggle">
-                        <span>Modo Color</span>
-                        <div class="toggle-switch" id="colorToggleSwitch"></div>
-                    </div>
-                `;
-                
-                document.getElementById('hardModeToggle').addEventListener('click', () => {
-                    if (isColorMode) return;
-                    isHardMode = !isHardMode;
-                    updateModesClasses();
-                    nextRound();
-                });
-                document.getElementById('colorModeToggle').addEventListener('click', () => {
-                    if (currentState !== GAME_STATES.SUMMARY && currentState !== GAME_STATES.IDLE && currentState !== GAME_STATES.STOPPED) {
-                        return;
-                    }
-                    isColorMode = !isColorMode;
-                    if (isColorMode) isHardMode = false;
-                    updateModesClasses();
-                    nextRound();
-                });
-            }
-            
-            // Re-vincular elementos visuales en pantalla normal
-            const sw1 = document.getElementById('toggleSwitch');
-            if(sw1 && isHardMode) sw1.closest('.hard-mode-toggle').classList.add('active'); 
-        }
+        const hardToggleBtn = document.getElementById('hardToggleBtn');
+        const hardBadge = document.getElementById('hardBadge');
 
         function generateTarget() {
             targetTime = Math.floor(Math.random() * 901 + 100) / 100;
@@ -997,7 +660,8 @@
 
         function getCalculatedScore(elapsed, target) {
             let diff = Math.abs(elapsed - target);
-            let rawScore = 10 - (diff * 2.5);
+            let multiplier = hardMode ? 4.0 : 2.5;
+            let rawScore = 10 - (diff * multiplier);
             return Math.max(0, rawScore);
         }
 
@@ -1010,10 +674,10 @@
         }
 
         function getSummaryFlavorText(score) {
-            if (score >= 45) return "¡Impecable! Tienes una memoria y precisión asombrosas.";
-            if (score >= 35) return "Excelente nivel. Tienes un gran control visual.";
-            if (score >= 25) return "Buen resultado, pero aún puedes afinar más tu memoria de color.";
-            return "Sigue practicando, no es tan fácil clocar los tonos de memoria.";
+            if (score >= 45) return "¡Impecable! Tienes una precisión asombrosa.";
+            if (score >= 35) return "Excelente nivel. Tienes un gran control del tiempo.";
+            if (score >= 25) return "Buen resultado, pero aún puedes afinar más tu ritmo.";
+            return "Sigue practicando, no es tan fácil clavar el tiempo de memoria.";
         }
 
         function resetGameDisplay() {
@@ -1023,8 +687,6 @@
             scoreVal.className = 'score-val';
             instructions.className = 'instructions';
             gameCard.className = 'game-card';
-            
-            updateModesClasses();
             
             document.getElementById('cardTopBarContainer').style.display = "flex";
             mainDisplayArea.innerHTML = `
@@ -1045,149 +707,6 @@
             return { recreatedTimerVal, recreatedScoreLabel, recreatedScoreVal };
         }
 
-        function startColorMemorize() {
-            currentState = GAME_STATES.MEMORIZING;
-            
-            targetH = Math.floor(Math.random() * 360);
-            targetS = Math.floor(Math.random() * 60) + 20;
-            targetL = Math.floor(Math.random() * 60) + 20;
-            
-            document.getElementById('cardTopBarContainer').style.display = "flex";
-            
-            mainDisplayArea.innerHTML = `
-                <div class="color-game-area">
-                    <div class="memory-fullscreen-box" style="background-color: hsl(${targetH}, ${targetS}%, ${targetL}%);" id="fullMemBox">
-                        <div class="memory-timer" id="memoryTimerDisplay">5s</div>
-                        <div class="memory-fullscreen-title">Memoriza el color</div>
-                    </div>
-                </div>
-            `;
-            
-            instructions.textContent = "Memoriza el color que ocupa toda la pantalla. Desaparecerá en 5 segundos.";
-            
-            memoryTimerCount = 5;
-            const memDisplay = document.getElementById('memoryTimerDisplay');
-
-            memoryTimerInterval = setInterval(() => {
-                memoryTimerCount--;
-                memDisplay.textContent = `${memoryTimerCount}s`;
-
-                if (memoryTimerCount <= 0) {
-                    clearInterval(memoryTimerInterval);
-                    playTone(440, 0.2, 'sine');
-                    startColorAdjust();
-                }
-            }, 1000);
-        }
-
-        function startColorAdjust() {
-            currentState = GAME_STATES.RUNNING;
-            
-            mainDisplayArea.innerHTML = `
-                <div class="color-game-area">
-                    <div class="color-adjust-row">
-                        <div class="color-preview-box" id="userColorBox" style="background-color: hsl(0, 50%, 50%);">
-                            <span class="color-box-label">TU COPIA</span>
-                        </div>
-                    </div>
-                    
-                    <div class="sliders-col">
-                        <div class="slider-group">
-                            <div class="slider-label"><span>Tono (Hue)</span><span id="valH">0°</span></div>
-                            <input type="range" id="hueSlider" class="color-slider" min="0" max="360" value="0">
-                        </div>
-                        <div class="slider-group">
-                            <div class="slider-label"><span>Saturación</span><span id="valS">50%</span></div>
-                            <input type="range" id="satSlider" class="color-slider" min="0" max="100" value="50">
-                        </div>
-                        <div class="slider-group">
-                            <div class="slider-label"><span>Intensidad (Luminosidad)</span><span id="valL">50%</span></div>
-                            <input type="range" id="lightSlider" class="color-slider" min="0" max="100" value="50">
-                        </div>
-                    </div>
-                </div>
-            `;
-            
-            instructions.textContent = "Ajusta las barras para replicar el tono, saturación e intensidad que memorizaste.";
-
-            const hS = document.getElementById('hueSlider');
-            const sS = document.getElementById('satSlider');
-            const lS = document.getElementById('lightSlider');
-            const userBox = document.getElementById('userColorBox');
-
-            function updateColor() {
-                const h = hS.value;
-                const s = sS.value;
-                const l = lS.value;
-                
-                document.getElementById('valH').textContent = h + '°';
-                document.getElementById('valS').textContent = s + '%';
-                document.getElementById('valL').textContent = l + '%';
-                
-                userBox.style.backgroundColor = `hsl(${h}, ${s}%, ${l}%)`;
-            }
-
-            hS.addEventListener('input', updateColor);
-            sS.addEventListener('input', updateColor);
-            lS.addEventListener('input', updateColor);
-        }
-
-        function stopColorGameRound() {
-            if (memoryTimerCount > 0) return;
-
-            const hS = document.getElementById('hueSlider').value;
-            const sS = document.getElementById('satSlider').value;
-            const lS = document.getElementById('lightSlider').value;
-            
-            let diffH = Math.abs(hS - targetH);
-            if (diffH > 180) diffH = 360 - diffH;
-            const diffS = Math.abs(sS - targetS);
-            const diffL = Math.abs(lS - targetL);
-            
-            let roundPts = Math.max(0, 10 - ((diffH / 36) + (diffS / 15) + (diffL / 15)));
-
-            totalScore += roundPts;
-            roundScores.push(roundPts);
-            
-            currentState = GAME_STATES.STOPPED;
-
-            const targetColorStr = `hsl(${targetH}, ${targetS}%, ${targetL}%)`;
-            const userColorStr = `hsl(${hS}, ${sS}%, ${lS}%)`;
-            
-            mainDisplayArea.innerHTML = `
-                <div class="timer-val" style="font-size: 3rem; margin-top:0.5rem;">Ronda ${round} Finalizada</div>
-                <div class="results-compare-box">
-                    <div class="results-preview-item">
-                        <div class="results-preview-circle" style="background: ${targetColorStr};"></div>
-                        <span style="font-size:0.75rem; font-weight:700; color:var(--text-muted)">OBJETIVO</span>
-                    </div>
-                    <div class="results-preview-item">
-                        <div class="results-preview-circle" style="background: ${userColorStr};"></div>
-                        <span style="font-size:0.75rem; font-weight:700; color:var(--text-muted)">TU COPIA</span>
-                    </div>
-                </div>
-                <div class="score-label" style="font-size: 1rem; color: var(--text-muted); text-transform:uppercase; margin-top:10px;">Puntos de memoria</div>
-                <div class="score-val animate-pop" id="scoreValDisplay" style="font-size: 4.5rem; color: var(--success-color);">0.00 / 10.00</div>
-            `;
-
-            const scoreValDisplay = document.getElementById('scoreValDisplay');
-            let currentSVal = 0;
-            const ptsInterval = setInterval(() => {
-                currentSVal += roundPts / 30;
-                if(currentSVal >= roundPts) {
-                    currentSVal = roundPts;
-                    clearInterval(ptsInterval);
-                }
-                scoreValDisplay.textContent = `${currentSVal.toFixed(2)} / 10.00`;
-            }, 20);
-            
-            if (round < 5) {
-                instructions.textContent = "Siguiente ronda de memoria preparada. Pulsa siguiente.";
-            } else {
-                instructions.textContent = "Partida completada. Pulsa el botón para ver el resumen final.";
-            }
-        }
-
         function nextRound() {
             if (currentState === GAME_STATES.SUMMARY) {
                 round = 1;
@@ -1197,49 +716,37 @@
                 return;
             }
             
-            if (isColorMode) {
-                resetGameDisplay();
-                startColorMemorize();
-            } else {
-                const refs = resetGameDisplay();
-                window.currTimerVal = refs.recreatedTimerVal;
-                window.currScoreLabel = refs.recreatedScoreLabel;
-                window.currScoreVal = refs.recreatedScoreVal;
+            const refs = resetGameDisplay();
+            window.currTimerVal = refs.recreatedTimerVal;
+            window.currScoreLabel = refs.recreatedScoreLabel;
+            window.currScoreVal = refs.recreatedScoreVal;
 
-                generateTarget();
-                roundVal.textContent = round;
-                roundVal.closest('.round-display').style.display = "block";
-                targetVal.closest('.target-display').style.display = "block";
-                currentState = GAME_STATES.IDLE;
-                instructions.textContent = isHardMode 
-                    ? "Modo Difícil activado. ¡Suelta para iniciar y reza por tu ritmo interno!" 
-                    : "Mantén espacio para cargar. Suelta para iniciar el cronómetro.";
-                gameCard.classList.add('animate-pop');
-            }
+            generateTarget();
+            roundVal.textContent = round;
+            roundVal.closest('.round-display').style.display = "flex";
+            targetVal.closest('.target-display').style.display = "flex";
+            hardBadge.style.display = hardMode ? "inline-block" : "none";
+            currentState = GAME_STATES.IDLE;
+            instructions.textContent = "Mantén espacio para cargar. Suelta para iniciar el cronómetro.";
+            gameCard.classList.add('animate-pop');
         }
 
         function advanceRoundOrSummary() {
             if (currentState === GAME_STATES.SUMMARY) {
                 nextRound();
-            } else if (currentState === GAME_STATES.STOPPED) {
+            } else if (currentState !== GAME_STATES.STOPPED && currentState !== GAME_STATES.IDLE) {
+                return;
+            }
+
+            if (currentState === GAME_STATES.STOPPED) {
                 if (round < 5) {
                     round++;
                     nextRound();
                 } else {
                     showSummaryScreen();
                 }
-            } else if (currentState === GAME_STATES.RUNNING) {
-                if (isColorMode) {
-                    stopColorGameRound();
-                } else {
-                    stopTimer();
-                }
             } else if (currentState === GAME_STATES.IDLE) {
-                if (isColorMode) {
-                    startColorMemorize();
-                } else {
-                    nextRound();
-                }
+                nextRound();
             }
         }
 
@@ -1249,14 +756,26 @@
             round = 1;
             totalScore = 0;
             roundScores = [];
-            
-            if (memoryTimerInterval) clearInterval(memoryTimerInterval);
-            
             nextRound();
         }
 
         restartNavBtn.addEventListener('click', triggerRestart);
         restartSummaryBtn.addEventListener('click', triggerRestart);
+
+        hardToggleBtn.addEventListener('click', () => {
+            hardMode = !hardMode;
+            if (hardMode) {
+                body.classList.add('state-hard');
+            } else {
+                body.classList.remove('state-hard');
+            }
+            hardBadge.style.display = hardMode ? "inline-block" : "none";
+            
+            // Si estamos en IDLE, regeneramos objetivo para adaptar los colores del badge si cambia
+            if(currentState === GAME_STATES.IDLE) {
+                generateTarget();
+            }
+        });
 
         generateTarget();
         window.currTimerVal = timerVal;
@@ -1269,38 +788,28 @@
 
                 if (currentState === GAME_STATES.SUMMARY) return;
 
-                if (isColorMode) {
-                    if (currentState === GAME_STATES.IDLE) {
-                        startColorMemorize();
-                    } else if (currentState === GAME_STATES.RUNNING) {
-                        stopColorGameRound();
-                    } else if (currentState === GAME_STATES.STOPPED) {
-                        advanceRoundOrSummary();
-                    }
-                } else {
-                    if (currentState === GAME_STATES.IDLE) {
-                        currentState = GAME_STATES.PREPARING;
-                        body.className = (isHardMode ? 'mode-hard ' : '') + 'state-preparing';
-                        instructions.textContent = "Cargando... Suelta para empezar.";
-                        
-                        chargePitch = 150;
-                        chargeInterval = setInterval(() => {
-                            if(chargePitch < 300) chargePitch += 10;
-                            playTone(chargePitch, 0.1, 'sine', false);
-                        }, 100);
-                    }
-                    else if (currentState === GAME_STATES.RUNNING) {
-                        stopTimer();
-                    }
-                    else if (currentState === GAME_STATES.STOPPED) {
-                        advanceRoundOrSummary();
-                    }
+                if (currentState === GAME_STATES.IDLE) {
+                    currentState = GAME_STATES.PREPARING;
+                    body.classList.add('state-preparing');
+                    instructions.textContent = "Cargando... Suelta para empezar.";
+                    
+                    chargePitch = 150;
+                    chargeInterval = setInterval(() => {
+                        if(chargePitch < 300) chargePitch += 10;
+                        playTone(chargePitch, 0.1, 'sine', false);
+                    }, 100);
+                }
+                else if (currentState === GAME_STATES.RUNNING) {
+                    stopTimer();
+                }
+                else if (currentState === GAME_STATES.STOPPED) {
+                    advanceRoundOrSummary();
                 }
             }
         });
 
         window.addEventListener('keyup', (e) => {
-            if (e.code === 'Space' && !isColorMode) {
+            if (e.code === 'Space') {
                 if (currentState === GAME_STATES.PREPARING) {
                     clearInterval(chargeInterval);
                     startTimer();
@@ -1310,35 +819,19 @@
 
         function startTimer() {
             currentState = GAME_STATES.RUNNING;
-            body.className = (isHardMode ? 'mode-hard ' : '') + 'state-running';
+            body.classList.add('state-running');
             instructions.textContent = "Pulsa espacio otra vez para parar.";
             
             playTone(600, 0.15, 'triangle');
-
-            if (isHardMode) {
-                if (audioCtx.state === 'suspended') audioCtx.resume();
-                runningToneOsc = audioCtx.createOscillator();
-                runningToneGain = audioCtx.createGain();
-                runningToneOsc.type = 'sawtooth';
-                runningToneOsc.frequency.value = 330.0;
-                runningToneGain.gain.setValueAtTime(0.02, audioCtx.currentTime);
-                runningToneOsc.connect(runningToneGain);
-                runningToneGain.connect(audioCtx.destination);
-                runningToneOsc.start();
-            }
 
             timerStart = performance.now();
             timerInterval = setInterval(() => {
                 let now = performance.now();
                 elapsedTime = (now - timerStart) / 1000;
                 
-                if (!isHardMode) {
-                    window.currTimerVal.textContent = elapsedTime.toFixed(2);
-                } else {
-                    window.currTimerVal.textContent = "-";
-                }
+                window.currTimerVal.textContent = elapsedTime.toFixed(2);
 
-                if (!isHardMode && Math.floor(elapsedTime) > Math.floor(elapsedTime - 0.01)) {
+                if (Math.floor(elapsedTime) > Math.floor(elapsedTime - 0.01)) {
                     playTone(400, 0.05, 'sine');
                     window.currTimerVal.classList.add('timer-tick-anim');
                     setTimeout(() => window.currTimerVal.classList.remove('timer-tick-anim'), 150);
@@ -1348,17 +841,9 @@
 
         function stopTimer() {
             clearInterval(timerInterval);
-            
-            if (isHardMode && runningToneOsc) {
-                try {
-                    runningToneOsc.stop();
-                    runningToneOsc.disconnect();
-                } catch(e){}
-                runningToneOsc = null;
-            }
 
             currentState = GAME_STATES.STOPPED;
-            body.className = isHardMode ? 'mode-hard' : '';
+            body.classList.remove('state-preparing', 'state-running');
 
             let finalScore = getCalculatedScore(elapsedTime, targetTime);
 
@@ -1411,10 +896,7 @@
             restartSummaryContainer.style.display = "flex";
 
             let roundsHtml = roundScores.map((score, idx) => {
-                let gradeClass = getGradeClass(score > 10 ? (score/5) : (score*5/10));
-                if(isColorMode) {
-                     gradeClass = getGradeClass(score);
-                }
+                let gradeClass = getGradeClass(score);
                 return `
                     <div class="round-box ${gradeClass}">
                         <span>${score.toFixed(1)}</span>
